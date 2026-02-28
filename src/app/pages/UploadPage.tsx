@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { ImageUpload } from '../components/ImageUpload';
-import { IngredientsList } from '../components/IngredientsList';
+import {
+  ImageUpload,
+  type DetectedIngredient,
+} from '@/components/ImageUpload';
+import { IngredientsList } from '@/components/IngredientsList';
 import { RecipeList } from '../components/RecipeList';
 import { Navbar } from '../components/Navbar';
 import { SlidersHorizontal } from 'lucide-react';
@@ -8,7 +11,7 @@ import { RecipeFilters as RecipeFiltersType } from '../App';
 
 export function UploadPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [ingredients, setIngredients] = useState<DetectedIngredient[]>([]);
   const [filters, setFilters] = useState<RecipeFiltersType>({
     cuisine: 'any',
     skillLevel: 'any',
@@ -18,21 +21,31 @@ export function UploadPage() {
   });
   const [showRecipes, setShowRecipes] = useState(false);
 
-  const handleImageUpload = (imageUrl: string, detectedIngredients: string[]) => {
+  const handleImageUpload = (
+    imageUrl: string,
+    detectedIngredients: DetectedIngredient[],
+  ) => {
     setUploadedImage(imageUrl);
     setIngredients(detectedIngredients);
     setShowRecipes(true);
   };
 
-  const handleAddIngredient = (ingredient: string) => {
-    if (!ingredients.includes(ingredient.toLowerCase())) {
-      setIngredients([...ingredients, ingredient.toLowerCase()]);
+  const handleAddIngredient = (ingredient: DetectedIngredient) => {
+    if (
+      !ingredients.find(
+        (item) => item.name.toLowerCase() === ingredient.name.toLowerCase(),
+      )
+    ) {
+      setIngredients([...ingredients, ingredient]);
     }
   };
 
-  const handleRemoveIngredient = (ingredient: string) => {
-    setIngredients(ingredients.filter(i => i !== ingredient));
+  const handleRemoveIngredient = (ingredientName: string) => {
+    setIngredients(ingredients.filter((ingredient) => ingredient.name !== ingredientName));
   };
+
+  // Convert detected ingredients to RecipeList format
+  const ingredientNames = ingredients.map((ingredient) => ingredient.name);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
@@ -144,30 +157,34 @@ export function UploadPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1">
-                <IngredientsList
-                  ingredients={ingredients}
-                  onAddIngredient={handleAddIngredient}
-                  onRemoveIngredient={handleRemoveIngredient}
-                />
-              </div>
-              <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-orange-100 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <SlidersHorizontal className="w-5 h-5 text-orange-500" />
-                  <h3 className="text-lg font-semibold text-slate-800">Refine Your Search</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Left sidebar - Ingredients */}
+            <div className="lg:col-span-1">
+              <IngredientsList
+                ingredients={ingredients}
+                onAddIngredient={handleAddIngredient}
+                onRemoveIngredient={handleRemoveIngredient}
+              />
+            </div>
+            
+            {/* Right content - Filters and Recipes */}
+            <div className="lg:col-span-3">
+              {/* Compact Filters Bar */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <SlidersHorizontal className="w-4 h-4 text-slate-600" />
+                  <h3 className="font-medium text-slate-800">Filters</h3>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-5 gap-3">
                   <div>
-                    <label className="text-xs font-medium text-slate-700 mb-1.5 block">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5 block">
                       Cuisine
                     </label>
                     <select
                       value={filters.cuisine}
                       onChange={(e) => setFilters({ ...filters, cuisine: e.target.value })}
-                      className="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="american">American</option>
@@ -182,13 +199,13 @@ export function UploadPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-slate-700 mb-1.5 block">
-                      Skill
+                    <label className="text-xs font-medium text-slate-600 mb-1.5 block">
+                      Skill Level
                     </label>
                     <select
                       value={filters.skillLevel}
                       onChange={(e) => setFilters({ ...filters, skillLevel: e.target.value })}
-                      className="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="beginner">Beginner</option>
@@ -198,13 +215,13 @@ export function UploadPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-slate-700 mb-1.5 block">
-                      Time
+                    <label className="text-xs font-medium text-slate-600 mb-1.5 block">
+                      Cook Time
                     </label>
                     <select
                       value={filters.cookTime}
                       onChange={(e) => setFilters({ ...filters, cookTime: e.target.value })}
-                      className="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="quick">&lt;15 min</option>
@@ -215,13 +232,13 @@ export function UploadPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-slate-700 mb-1.5 block">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5 block">
                       Budget
                     </label>
                     <select
                       value={filters.budget}
                       onChange={(e) => setFilters({ ...filters, budget: e.target.value })}
-                      className="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="low">$</option>
@@ -231,13 +248,13 @@ export function UploadPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-slate-700 mb-1.5 block">
-                      Meal
+                    <label className="text-xs font-medium text-slate-600 mb-1.5 block">
+                      Meal Type
                     </label>
                     <select
                       value={filters.mealTime}
                       onChange={(e) => setFilters({ ...filters, mealTime: e.target.value })}
-                      className="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="breakfast">Breakfast</option>
@@ -248,9 +265,10 @@ export function UploadPage() {
                   </div>
                 </div>
               </div>
-            </div>
 
-            <RecipeList ingredients={ingredients} filters={filters} />
+              {/* Recipes */}
+              <RecipeList ingredients={ingredientNames} filters={filters} />
+            </div>
           </div>
         )}
       </main>

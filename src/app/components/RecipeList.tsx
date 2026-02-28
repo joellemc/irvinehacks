@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RecipeFilters } from '../App';
 import { RecipeCard, Recipe } from './RecipeCard';
 import { RecipeModal } from './RecipeModal';
@@ -7,6 +7,21 @@ import { Sparkles } from 'lucide-react';
 interface RecipeListProps {
   ingredients: string[];
   filters: RecipeFilters;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function getApiErrorMessage(data: unknown): string | null {
+  if (!isRecord(data)) return null;
+  return typeof data.error === 'string' ? data.error : null;
+}
+
+function getApiRecipes(data: unknown): Recipe[] {
+  if (!isRecord(data)) return [];
+  const recipes = data.recipes;
+  return Array.isArray(recipes) ? (recipes as Recipe[]) : [];
 }
 
 // Mock recipe database
@@ -254,23 +269,76 @@ const ALL_RECIPES: Recipe[] = [
 ];
 
 export function RecipeList({ ingredients, filters }: RecipeListProps) {
+  const [remoteRecipes, setRemoteRecipes] = useState<Recipe[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!ingredients.length) return;
+
+    const controller = new AbortController();
+    const timeoutMs = 20_000;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    const debounceId = setTimeout(async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/recipes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ingredients, filters }),
+          signal: controller.signal,
+        });
+
+        const data: unknown = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error(getApiErrorMessage(data) ?? 'Failed to generate recipes');
+        }
+
+        setRemoteRecipes(getApiRecipes(data));
+      } catch (e) {
+        const message =
+          e instanceof Error && e.name === 'AbortError'
+            ? 'Recipe generation timed out. Showing fallback recipes.'
+            : e instanceof Error
+              ? e.message
+              : 'Recipe generation failed. Showing fallback recipes.';
+        setError(message);
+        setRemoteRecipes(null);
+      } finally {
+        clearTimeout(timeoutId);
+        setIsLoading(false);
+      }
+    }, 250);
+
+    return () => {
+      clearTimeout(debounceId);
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [ingredients, filters]);
+
   const filteredRecipes = useMemo(() => {
-    // Calculate match percentage for each recipe
-    const recipesWithMatch = ALL_RECIPES.map((recipe) => {
+    const sourceRecipes = remoteRecipes?.length ? remoteRecipes : ALL_RECIPES;
+
+    // Calculate match percentage (for fallback recipes; remote recipes should already include it)
+    const recipesWithMatch = sourceRecipes.map((recipe) => {
       const matchingIngredients = recipe.ingredients.filter((ing) =>
-        ingredients.some((userIng) => 
-          userIng.toLowerCase().includes(ing.toLowerCase()) || 
-          ing.toLowerCase().includes(userIng.toLowerCase())
-        )
+        ingredients.some(
+          (userIng) =>
+            userIng.toLowerCase().includes(ing.toLowerCase()) ||
+            ing.toLowerCase().includes(userIng.toLowerCase()),
+        ),
       );
       const matchPercentage = Math.round(
-        (matchingIngredients.length / recipe.ingredients.length) * 100
+        (matchingIngredients.length / recipe.ingredients.length) * 100,
       );
       return { ...recipe, matchPercentage };
     });
 
     // Filter by user preferences
-    let filtered = recipesWithMatch.filter((recipe) => {
+    const filtered = recipesWithMatch.filter((recipe) => {
       if (filters.cuisine !== 'any' && recipe.cuisine !== filters.cuisine) return false;
       if (filters.skillLevel !== 'any' && recipe.skillLevel !== filters.skillLevel) return false;
       if (filters.mealTime !== 'any' && recipe.mealTime !== filters.mealTime) return false;
@@ -292,9 +360,25 @@ export function RecipeList({ ingredients, filters }: RecipeListProps) {
     filtered.sort((a, b) => b.matchPercentage - a.matchPercentage);
 
     return filtered;
-  }, [ingredients, filters]);
+  }, [ingredients, filters, remoteRecipes]);
 
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+
+  if (isLoading && (!remoteRecipes || remoteRecipes.length === 0)) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-12 text-center">
+        <div className="max-w-md mx-auto">
+          <div className="bg-gradient-to-br from-slate-100 to-slate-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Sparkles className="w-10 h-10 text-slate-400" />
+          </div>
+          <h3 className="text-xl font-bold text-slate-800 mb-2">Generating recipes…</h3>
+          <p className="text-slate-600">
+            Asking Gemini for suggestions based on your ingredients.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (filteredRecipes.length === 0) {
     return (
@@ -305,12 +389,12 @@ export function RecipeList({ ingredients, filters }: RecipeListProps) {
           </div>
           <h3 className="text-xl font-bold text-slate-800 mb-2">No Recipes Found</h3>
           <p className="text-slate-600 mb-4">
-            We couldn't find any recipes matching your criteria. Try adjusting your filters or adding more ingredients.
+            We could not find any recipes matching your criteria. Try adjusting your filters or adding more ingredients.
           </p>
           <div className="bg-orange-50 p-4 rounded-xl text-left">
             <p className="text-sm font-semibold text-slate-800 mb-2">Suggestions:</p>
             <ul className="text-sm text-slate-600 space-y-1">
-              <li>• Change your cuisine preference to "Any Cuisine"</li>
+              <li>• Change your cuisine preference to &quot;Any Cuisine&quot;</li>
               <li>• Adjust your skill level or time requirements</li>
               <li>• Add more ingredients from your fridge</li>
             </ul>
@@ -329,6 +413,11 @@ export function RecipeList({ ingredients, filters }: RecipeListProps) {
         <p className="text-slate-600">
           Based on your ingredients and preferences
         </p>
+        {error && (
+          <p className="mt-2 text-sm text-amber-700">
+            {error}
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,37 +1,71 @@
 import { useState, useRef } from 'react';
 import { Upload, Camera, Loader2 } from 'lucide-react';
 
-interface ImageUploadProps {
-  onImageUpload: (imageUrl: string, ingredients: string[]) => void;
+export interface DetectedIngredient {
+  name: string;
+  category: 'produce' | 'proteins' | 'dairy' | 'grains' | 'condiments' | 'other';
+  useSoon?: boolean;
 }
 
-// Mock AI detection - simulates ingredient detection from image
-const detectIngredientsFromImage = (): string[] => {
-  const possibleIngredients = [
-    'chicken breast',
-    'eggs',
-    'milk',
-    'cheese',
-    'tomatoes',
-    'lettuce',
-    'onions',
-    'garlic',
-    'carrots',
-    'potatoes',
-    'bell peppers',
-    'mushrooms',
-    'spinach',
-    'broccoli',
-    'pasta',
-    'rice',
-    'bread',
-    'butter',
-    'olive oil',
-    'soy sauce',
+interface ImageUploadProps {
+  onImageUpload: (imageUrl: string, ingredients: DetectedIngredient[]) => void;
+}
+
+// Mock AI detection - simulates ingredient detection from image with categories
+const detectIngredientsFromImage = (): DetectedIngredient[] => {
+  const possibleIngredients: DetectedIngredient[] = [
+    // Produce
+    { name: 'white onions', category: 'produce' },
+    { name: 'avocado', category: 'produce', useSoon: true },
+    { name: 'carrots', category: 'produce' },
+    { name: 'cauliflower', category: 'produce' },
+    { name: 'salad greens', category: 'produce', useSoon: true },
+    { name: 'spinach', category: 'produce', useSoon: true },
+    { name: 'tomatoes', category: 'produce' },
+    { name: 'bell peppers', category: 'produce' },
+    { name: 'broccoli', category: 'produce' },
+    
+    // Proteins
+    { name: 'eggs', category: 'proteins' },
+    { name: 'protein bars', category: 'proteins' },
+    { name: 'almond butter', category: 'proteins' },
+    { name: 'peanut butter', category: 'proteins' },
+    { name: 'chicken breast', category: 'proteins' },
+    
+    // Dairy
+    { name: 'kefir', category: 'dairy' },
+    { name: 'Greek yogurt', category: 'dairy' },
+    { name: 'raspberry kefir', category: 'dairy' },
+    { name: 'vanilla coffee creamer', category: 'dairy' },
+    { name: 'almond milk', category: 'dairy' },
+    { name: 'Starbucks vanilla latte', category: 'dairy' },
+    { name: 'shredded cheese', category: 'dairy' },
+    { name: 'cheese slices', category: 'dairy' },
+    { name: 'butter', category: 'dairy' },
+    { name: 'milk', category: 'dairy' },
+    
+    // Grains
+    { name: 'chickpea pasta', category: 'grains' },
+    { name: 'tortillas', category: 'grains' },
+    { name: 'rice', category: 'grains' },
+    { name: 'bread', category: 'grains' },
+    
+    // Condiments
+    { name: 'marinara sauce', category: 'condiments' },
+    { name: 'salsa', category: 'condiments' },
+    { name: 'soy sauce', category: 'condiments' },
+    { name: 'olive oil', category: 'condiments' },
+    
+    // Other
+    { name: 'chocolate bars', category: 'other' },
+    { name: 'applesauce pouches', category: 'other' },
+    { name: 'corn', category: 'other' },
+    { name: 'green juice', category: 'other' },
+    { name: 'sparkling water', category: 'other' },
   ];
 
-  // Randomly select 5-10 ingredients to simulate detection
-  const numIngredients = Math.floor(Math.random() * 6) + 5;
+  // Randomly select 15-28 ingredients to simulate detection
+  const numIngredients = Math.floor(Math.random() * 14) + 15;
   const shuffled = [...possibleIngredients].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, numIngredients);
 };

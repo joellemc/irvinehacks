@@ -1,4 +1,4 @@
-import { RecipeFilters as RecipeFiltersType } from '../App';
+import type { RecipeFilters as RecipeFiltersType } from './types';
 import { SlidersHorizontal } from 'lucide-react';
 
 interface RecipeFiltersProps {
