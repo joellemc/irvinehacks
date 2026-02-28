@@ -1,0 +1,5 @@
+# For the YOLO service (run: pip install -r yolo-service/requirements.txt)
+ultralytics>=8.0.0
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
