@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ImageUpload, DetectedIngredient } from '../components/ImageUpload';
+import { ImageUpload } from '../components/ImageUpload';
 import { IngredientsList } from '../components/IngredientsList';
 import { RecipeList } from '../components/RecipeList';
 import { Navbar } from '../components/Navbar';
@@ -8,7 +8,7 @@ import { RecipeFilters as RecipeFiltersType } from '../App';
 
 export function UploadPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [ingredients, setIngredients] = useState<DetectedIngredient[]>([]);
+  const [ingredients, setIngredients] = useState<string[]>([]);
   const [filters, setFilters] = useState<RecipeFiltersType>({
     cuisine: 'any',
     skillLevel: 'any',
@@ -18,24 +18,24 @@ export function UploadPage() {
   });
   const [showRecipes, setShowRecipes] = useState(false);
 
-  const handleImageUpload = (imageUrl: string, detectedIngredients: DetectedIngredient[]) => {
+  const handleImageUpload = (imageUrl: string, detectedIngredients: string[]) => {
     setUploadedImage(imageUrl);
     setIngredients(detectedIngredients);
     setShowRecipes(true);
   };
 
-  const handleAddIngredient = (ingredient: DetectedIngredient) => {
-    if (!ingredients.find(i => i.name.toLowerCase() === ingredient.name.toLowerCase())) {
+  const handleAddIngredient = (ingredient: string) => {
+    if (!ingredients.find(i => i.toLowerCase() === ingredient.toLowerCase())) {
       setIngredients([...ingredients, ingredient]);
     }
   };
 
   const handleRemoveIngredient = (ingredientName: string) => {
-    setIngredients(ingredients.filter(i => i.name !== ingredientName));
+    setIngredients(ingredients.filter(i => i !== ingredientName));
   };
 
-  // Convert DetectedIngredient[] to string[] for RecipeList
-  const ingredientNames = ingredients.map(i => i.name);
+  // Convert detected ingredients to RecipeList format
+  const ingredientNames = ingredients;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
