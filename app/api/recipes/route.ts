@@ -63,6 +63,35 @@ function extractJson(text: string) {
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80";
 
+function mapRecipeApiError(rawMessage: string) {
+  const msg = rawMessage.toLowerCase();
+
+  if (
+    msg.includes("429") ||
+    msg.includes("quota exceeded") ||
+    msg.includes("rate limit")
+  ) {
+    return {
+      status: 429,
+      clientMessage:
+        "Gemini API limit reached. Showing fallback recipes. Please try again shortly.",
+    };
+  }
+
+  if (msg.includes("timed out")) {
+    return {
+      status: 504,
+      clientMessage:
+        "Recipe generation timed out. Showing fallback recipes. Please try again.",
+    };
+  }
+
+  return {
+    status: 500,
+    clientMessage: "Recipe generation failed. Showing fallback recipes.",
+  };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -113,8 +142,8 @@ export async function POST(req: NextRequest) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const modelName = "gemini-2.5-flash";
     const model = genAI.getGenerativeModel({ model: modelName });
-
     const timeoutMs = 20_000;
+
     const result = await Promise.race([
       model.generateContent({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -147,8 +176,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ recipes });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Recipe generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const rawMessage = e instanceof Error ? e.message : "Recipe generation failed";
+    const mapped = mapRecipeApiError(rawMessage);
+    return NextResponse.json({ error: mapped.clientMessage }, { status: mapped.status });
   }
 }
 
