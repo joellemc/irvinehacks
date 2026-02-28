@@ -12,7 +12,13 @@ const FiltersSchema = z.object({
 
 const RequestSchema = z.object({
   ingredients: z.array(z.string()).min(1).max(30),
-  filters: FiltersSchema.optional().default({}),
+  filters: FiltersSchema.optional().default({
+    cuisine: "any",
+    skillLevel: "any",
+    cookTime: "any",
+    budget: "any",
+    mealTime: "any",
+  }),
 });
 
 const RecipeSchema = z.object({
@@ -24,7 +30,6 @@ const RecipeSchema = z.object({
   mealTime: z.string().min(1),
   ingredients: z.array(z.string()).min(1).max(40),
   instructions: z.array(z.string()).min(1).max(25),
-  image: z.string().url().optional(),
 });
 
 const ResponseSchema = z.object({
@@ -62,6 +67,62 @@ function extractJson(text: string) {
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80";
+
+const IMAGE_LIBRARY = {
+  breakfast:
+    "https://images.unsplash.com/photo-1729223921247-c85b9b1a8ea8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmVha2Zhc3QlMjBvbWVsZXQlMjB0b2FzdHxlbnwxfHx8fDE3NzIyNTQzMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  salad:
+    "https://images.unsplash.com/photo-1633618309834-665b69ca6bd0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2ZWdldGFibGUlMjBzYWxhZCUyMGJvd2x8ZW58MXx8fHwxNzcyMjU0MzA4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+  veggies:
+    "https://images.unsplash.com/photo-1760445529098-949fcfc7c9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMGluZ3JlZGllbnRzJTIwa2l0Y2hlbiUyMGNvdW50ZXJ8ZW58MXx8fHwxNzcyMTc2NTYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+  stirFry:
+    "https://images.unsplash.com/photo-1761314025701-34795be5f737?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlja2VuJTIwc3RpciUyMGZyeSUyMGFzaWFufGVufDF8fHx8MTc3MjEzMjQ5OHww&ixlib=rb-4.1.0&q=80&w=1080",
+  soup:
+    "https://images.unsplash.com/photo-1553881781-4c55163dc5fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0b21hdG8lMjBzb3VwJTIwYnJlYWR8ZW58MXx8fHwxNzcyMjU0MzA5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+  protein:
+    "https://images.unsplash.com/photo-1633524792246-f25f5b0d66dc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncmlsbGVkJTIwc2FsbW9uJTIwdmVnZXRhYmxlc3xlbnwxfHx8fDE3NzIyNDkxMDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  pasta:
+    "https://images.unsplash.com/photo-1627207644206-a2040d60ecad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXN0YSUyMGNhcmJvbmFyYSUyMGRpc2h8ZW58MXx8fHwxNzcyMTg5ODk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+  smoothie:
+    "https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=1080&q=80",
+} as const;
+
+const IMAGE_KEYWORDS: Array<{ keywords: string[]; image: string }> = [
+  { keywords: ["smoothie", "shake", "juice"], image: IMAGE_LIBRARY.smoothie },
+  { keywords: ["salad", "greens", "vinaigrette"], image: IMAGE_LIBRARY.salad },
+  { keywords: ["taco", "tortilla", "burrito", "wrap", "quesadilla"], image: IMAGE_LIBRARY.veggies },
+  { keywords: ["pasta", "carbonara", "spaghetti", "penne", "mac"], image: IMAGE_LIBRARY.pasta },
+  { keywords: ["stir fry", "stir-fry", "fried rice", "noodle", "soy sauce"], image: IMAGE_LIBRARY.stirFry },
+  { keywords: ["soup", "broth", "bisque", "chowder"], image: IMAGE_LIBRARY.soup },
+  { keywords: ["salmon", "fish", "seafood"], image: IMAGE_LIBRARY.protein },
+  { keywords: ["omelet", "scramble", "egg", "breakfast", "yogurt"], image: IMAGE_LIBRARY.breakfast },
+  { keywords: ["chicken", "beef", "pork", "tofu"], image: IMAGE_LIBRARY.protein },
+  { keywords: ["roast", "roasted", "bake", "baked", "cauliflower", "broccoli"], image: IMAGE_LIBRARY.veggies },
+];
+
+function resolveRecipeImage(recipe: z.infer<typeof RecipeSchema>) {
+  const haystack = [
+    recipe.name,
+    recipe.cuisine,
+    recipe.mealTime,
+    ...recipe.ingredients,
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  for (const entry of IMAGE_KEYWORDS) {
+    if (entry.keywords.some((keyword) => haystack.includes(keyword))) {
+      return entry.image;
+    }
+  }
+
+  const cuisine = recipe.cuisine.toLowerCase();
+  if (cuisine.includes("italian")) return IMAGE_LIBRARY.pasta;
+  if (cuisine.includes("asian")) return IMAGE_LIBRARY.stirFry;
+  if (cuisine.includes("mediterranean")) return IMAGE_LIBRARY.salad;
+  if (recipe.mealTime.toLowerCase() === "breakfast") return IMAGE_LIBRARY.breakfast;
+  return FALLBACK_IMAGE;
+}
 
 function mapRecipeApiError(rawMessage: string) {
   const msg = rawMessage.toLowerCase();
@@ -122,7 +183,7 @@ export async function POST(req: NextRequest) {
       "You are a recipe recommendation engine for a web app.",
       "Return ONLY valid JSON. No markdown, no extra keys, no commentary.",
       "",
-      'Schema: {"recipes":[{"name":string,"cuisine":string,"skillLevel":string,"cookTime":string,"budget":string,"mealTime":string,"ingredients":[string],"instructions":[string],"image"?:string}]}',
+      'Schema: {"recipes":[{"name":string,"cuisine":string,"skillLevel":string,"cookTime":string,"budget":string,"mealTime":string,"ingredients":[string],"instructions":[string]}]}',
       "",
       `User ingredients: ${ingredients.join(", ")}`,
       `User filters (strings, may be 'any'): ${JSON.stringify(parsed.filters)}`,
@@ -137,6 +198,7 @@ export async function POST(req: NextRequest) {
       "- budget should be one of: low, moderate, high.",
       "- skillLevel should be one of: beginner, intermediate, advanced.",
       "- mealTime should be one of: breakfast, lunch, dinner, snack.",
+      "- Do not include image URLs; the server assigns images.",
     ].join("\n");
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -170,7 +232,7 @@ export async function POST(req: NextRequest) {
     const recipes = modelData.recipes.map((r, idx) => ({
       id: idx + 1,
       ...r,
-      image: r.image ?? FALLBACK_IMAGE,
+      image: resolveRecipeImage(r),
       matchPercentage: computeMatchPercentage(ingredients, r.ingredients),
     }));
 
