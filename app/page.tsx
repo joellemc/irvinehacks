@@ -1,58 +1,89 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
-import { Suspense } from "react";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { UploadCard } from "@/components/upload-card";
+import {
+  PreferencesSection,
+  Preferences,
+} from "@/components/preferences-section";
+import { Button } from "@/components/ui/button";
+
+export default function HomePage() {
+  const router = useRouter();
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [preferences, setPreferences] = useState<Preferences>({
+    cuisine: "Any",
+    cookingTime: "Any",
+    skillLevel: "Any",
+    budget: "Any",
+  });
+
+  const handleImageUpload = (file: File) => {
+    setUploadedImage(file);
+  };
+
+  const handleAnalyze = () => {
+    if (uploadedImage) {
+      const imageUrl = URL.createObjectURL(uploadedImage);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("uploadedImage", imageUrl);
+        sessionStorage.setItem("preferences", JSON.stringify(preferences));
+      }
+      router.push("/review");
+    }
+  };
+
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-4xl mx-auto px-8 py-16">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl mb-4 text-gray-900">
+            What&apos;s in your fridge?
+          </h1>
+          <p className="text-xl text-gray-600">
+            Upload a photo and we&apos;ll suggest recipes using what you
+            already have.
+          </p>
         </div>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
+        <div className="mb-8">
+          <UploadCard onImageUpload={handleImageUpload} />
+        </div>
+
+        {uploadedImage && (
+          <div className="mb-8 text-center">
+            <p className="text-sm text-green-600 mb-2">
+              ✓ Image uploaded successfully
+            </p>
+            <p className="text-xs text-gray-500">{uploadedImage.name}</p>
+          </div>
+        )}
+
+        <div className="mb-10">
+          <PreferencesSection
+            preferences={preferences}
+            onPreferencesChange={setPreferences}
+          />
+        </div>
+
+        <div className="flex justify-center">
+          <Button
+            onClick={handleAnalyze}
+            disabled={!uploadedImage}
+            size="lg"
+            className="px-12 py-6 text-lg"
+          >
+            Analyze my food
+          </Button>
+        </div>
+
+        {!uploadedImage && (
+          <p className="text-center text-sm text-gray-500 mt-4">
+            Upload an image to continue
           </p>
-          <ThemeSwitcher />
-        </footer>
+        )}
       </div>
-    </main>
+    </div>
   );
 }
