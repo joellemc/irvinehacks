@@ -253,17 +253,21 @@ const ALL_RECIPES: Recipe[] = [
   },
 ];
 
-export function RecipeList({ ingredients, filters }: RecipeListProps) {
+export function RecipeList({ ingredients = [], filters }: RecipeListProps) {
   const filteredRecipes = useMemo(() => {
     // Calculate match percentage for each recipe
     const recipesWithMatch = ALL_RECIPES.map((recipe) => {
       const matchingIngredients = recipe.ingredients.filter((ing) =>
-        ingredients.some((userIng) => 
-          userIng.toLowerCase().includes(ing.toLowerCase()) || 
-          ing.toLowerCase().includes(userIng.toLowerCase())
-        )
-      );
-      const matchPercentage = Math.round(
+        // guard against undefined or non-string entries coming from props
+        ingredients.some((userIng) => {
+          if (typeof userIng !== 'string') return false;
+          const normalizedUser = userIng.toLowerCase();
+          const normalizedIng = ing.toLowerCase();
+          return (
+            normalizedUser.includes(normalizedIng) ||
+            normalizedIng.includes(normalizedUser)
+          );
+        })
         (matchingIngredients.length / recipe.ingredients.length) * 100
       );
       return { ...recipe, matchPercentage };
