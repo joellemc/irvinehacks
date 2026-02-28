@@ -19,8 +19,12 @@ export function UploadPage() {
   const [showRecipes, setShowRecipes] = useState(false);
 
   const handleImageUpload = (imageUrl: string, detectedIngredients: DetectedIngredient[]) => {
+    // ensure we only keep ingredients with valid names
+    const filtered = detectedIngredients.filter(
+      (ing) => typeof ing.name === 'string' && ing.name.trim() !== ''
+    );
     setUploadedImage(imageUrl);
-    setIngredients(detectedIngredients);
+    setIngredients(filtered);
     setShowRecipes(true);
   };
 
@@ -34,8 +38,10 @@ export function UploadPage() {
     setIngredients(ingredients.filter(i => i.name !== ingredientName));
   };
 
-  // Convert DetectedIngredient[] to string[] for RecipeList
-  const ingredientNames = ingredients.map(i => i.name);
+  // Convert DetectedIngredient[] to string[] for RecipeList (drop invalid entries)
+  const ingredientNames = ingredients
+    .map(i => i.name)
+    .filter((name): name is string => typeof name === 'string' && name.trim() !== '');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">

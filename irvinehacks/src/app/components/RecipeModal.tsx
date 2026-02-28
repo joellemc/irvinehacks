@@ -1,6 +1,7 @@
 import { Recipe } from './RecipeCard';
 import { X, Clock, ChefHat, DollarSign, Check, Plus } from 'lucide-react';
 import { useGrocery } from '../context/GroceryContext';
+import { useEffect } from 'react';
 
 interface RecipeModalProps {
   recipe: Recipe;
@@ -10,6 +11,18 @@ interface RecipeModalProps {
 
 export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalProps) {
   const { addToGroceries, isInGroceries } = useGrocery();
+
+  // Handle ESC key press
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
 
   const ingredientsYouHave = recipe.ingredients.filter(ing =>
     userIngredients.some(userIng => 
