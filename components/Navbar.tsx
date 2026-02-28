@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ChefHat, Home, Upload, ShoppingCart } from 'lucide-react';
-import { useGrocery } from '../context/GroceryContext';
+import { useGrocery } from '../src/app/context/GroceryContext';
 
 export function Navbar() {
   const location = useLocation();

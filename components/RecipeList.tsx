@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { RecipeFilters } from '../App';
+import type { RecipeFilters } from './types';
 import { RecipeCard, Recipe } from './RecipeCard';
 import { RecipeModal } from './RecipeModal';
 import { Sparkles } from 'lucide-react';

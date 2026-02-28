@@ -1,6 +1,6 @@
 import { Recipe } from './RecipeCard';
 import { X, Clock, ChefHat, DollarSign, Check, Plus } from 'lucide-react';
-import { useGrocery } from '../context/GroceryContext';
+import { useGrocery } from '../src/app/context/GroceryContext';
 
 interface RecipeModalProps {
   recipe: Recipe;
