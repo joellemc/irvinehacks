@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# YOLO model weights (large files)
+yolo-service/*.pt
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

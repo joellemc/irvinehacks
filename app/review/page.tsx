@@ -10,16 +10,7 @@ import { Input } from "@/components/ui/input";
 export default function ReviewPage() {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState<string>("");
-  const [ingredients, setIngredients] = useState<string[]>([
-    "Tomatoes",
-    "Eggs",
-    "Cheese",
-    "Lettuce",
-    "Onions",
-    "Bell peppers",
-    "Chicken breast",
-    "Garlic",
-  ]);
+  const [ingredients, setIngredients] = useState<string[]>([]);
   const [newIngredient, setNewIngredient] = useState("");
   const [showAddInput, setShowAddInput] = useState(false);
 
@@ -31,6 +22,27 @@ export default function ReviewPage() {
       return;
     }
     setImageUrl(storedImage);
+
+    const storedIngredients = sessionStorage.getItem("detectedIngredients");
+    if (storedIngredients) {
+      try {
+        const parsed = JSON.parse(storedIngredients);
+        setIngredients(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        setIngredients([]);
+      }
+    } else {
+      setIngredients([
+        "Tomatoes",
+        "Eggs",
+        "Cheese",
+        "Lettuce",
+        "Onions",
+        "Bell peppers",
+        "Chicken breast",
+        "Garlic",
+      ]);
+    }
   }, [router]);
 
   const handleRemove = (index: number) => {
@@ -113,6 +125,11 @@ export default function ReviewPage() {
             </div>
 
             <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+              {ingredients.length === 0 ? (
+                <p className="text-gray-500 text-sm mb-4">
+                  No items detected in the image. Add ingredients manually below.
+                </p>
+              ) : null}
               <div className="flex flex-wrap gap-3 mb-4">
                 {ingredients.map((ingredient, index) => (
                   <IngredientChip

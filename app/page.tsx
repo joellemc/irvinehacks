@@ -8,6 +8,7 @@ import {
   Preferences,
 } from "@/components/preferences-section";
 import { Button } from "@/components/ui/button";
+import { detectIngredients } from "@/lib/detect";
 
 export default function HomePage() {
   const router = useRouter();
@@ -18,19 +19,36 @@ export default function HomePage() {
     skillLevel: "Any",
     budget: "Any",
   });
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
 
   const handleImageUpload = (file: File) => {
     setUploadedImage(file);
+    setAnalyzeError(null);
   };
 
-  const handleAnalyze = () => {
-    if (uploadedImage) {
+  const handleAnalyze = async () => {
+    if (!uploadedImage) return;
+
+    setIsAnalyzing(true);
+    setAnalyzeError(null);
+
+    try {
+      const ingredients = await detectIngredients(uploadedImage);
+
       const imageUrl = URL.createObjectURL(uploadedImage);
       if (typeof window !== "undefined") {
         sessionStorage.setItem("uploadedImage", imageUrl);
         sessionStorage.setItem("preferences", JSON.stringify(preferences));
+        sessionStorage.setItem(
+          "detectedIngredients",
+          JSON.stringify(ingredients),
+        );
       }
       router.push("/review");
+    } catch (e) {
+      setAnalyzeError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+      setIsAnalyzing(false);
     }
   };
 
@@ -70,13 +88,19 @@ export default function HomePage() {
         <div className="flex justify-center">
           <Button
             onClick={handleAnalyze}
-            disabled={!uploadedImage}
+            disabled={!uploadedImage || isAnalyzing}
             size="lg"
             className="px-12 py-6 text-lg"
           >
-            Analyze my food
+            {isAnalyzing ? "Analyzing…" : "Analyze my food"}
           </Button>
         </div>
+
+        {analyzeError && (
+          <p className="text-center text-sm text-red-600 mt-2">
+            {analyzeError}
+          </p>
+        )}
 
         {!uploadedImage && (
           <p className="text-center text-sm text-gray-500 mt-4">
