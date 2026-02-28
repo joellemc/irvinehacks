@@ -41,6 +41,8 @@ const YOLO_TIMEOUT_MS = 30_000;
           method: "POST",
           body: fd,
           signal: controller.signal,
+          cache: "no-store",
+          headers: { "Cache-Control": "no-store" },
         });
       } catch (e) {
         clearTimeout(timeoutId);
@@ -66,8 +68,18 @@ const YOLO_TIMEOUT_MS = 30_000;
       const data = await res.json();
       const ingredients =
         Array.isArray(data.ingredients) ? data.ingredients : data.labels ?? [];
+      const quantities =
+        data.quantities && typeof data.quantities === "object" ? data.quantities : {};
       console.log("[detect] YOLO service returned", ingredients.length, "items");
-      return NextResponse.json({ ingredients });
+      return NextResponse.json(
+        { ingredients, quantities },
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+            Pragma: "no-cache",
+          },
+        },
+      );
     }
 
     // No YOLO service configured: return mock detections so you can test the flow.

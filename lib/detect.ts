@@ -5,6 +5,7 @@
 
 export interface DetectResult {
   ingredients: string[];
+  quantities?: Record<string, number>;
 }
 
 export interface DetectError {
@@ -21,13 +22,13 @@ const DETECT_TIMEOUT_MS = 30_000;
  *
  * @param image - The image file (e.g. from <input type="file"> or drag-and-drop)
  * @param apiBase - Optional. Defaults to "" (same origin). Set to full URL to call a different host.
- * @returns List of detected ingredient labels
+ * @returns List of detected ingredient labels and optional counts per ingredient
  * @throws On non-OK response or timeout (throws Error with message from API or "Detection timed out...")
  */
 export async function detectIngredients(
   image: File,
   apiBase: string = "",
-): Promise<string[]> {
+): Promise<{ ingredients: string[]; quantities: Record<string, number> }> {
   const url = apiBase ? `${apiBase.replace(/\/$/, "")}/api/detect` : "/api/detect";
   const formData = new FormData();
   formData.set("image", image, image.name || "image.jpg");
@@ -41,6 +42,8 @@ export async function detectIngredients(
       method: "POST",
       body: formData,
       signal: controller.signal,
+      cache: "no-store",
+      headers: { "Cache-Control": "no-store" },
     });
   } catch (e) {
     clearTimeout(timeoutId);
@@ -63,5 +66,8 @@ export async function detectIngredients(
   }
 
   const result = data as DetectResult;
-  return Array.isArray(result.ingredients) ? result.ingredients : [];
+  const ingredients = Array.isArray(result.ingredients) ? result.ingredients : [];
+  const quantities =
+    result.quantities && typeof result.quantities === "object" ? result.quantities : {};
+  return { ingredients, quantities };
 }

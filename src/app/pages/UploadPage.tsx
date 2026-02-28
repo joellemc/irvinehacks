@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import {
-  ImageUpload,
-  type DetectedIngredient,
-} from '@/components/ImageUpload';
-import { IngredientsList } from '@/components/IngredientsList';
+import { ImageUpload } from '../components/ImageUpload';
+import { IngredientsList } from '../components/IngredientsList';
 import { RecipeList } from '../components/RecipeList';
 import { Navbar } from '../components/Navbar';
 import { SlidersHorizontal } from 'lucide-react';
@@ -11,7 +8,8 @@ import { RecipeFilters as RecipeFiltersType } from '../App';
 
 export function UploadPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [ingredients, setIngredients] = useState<DetectedIngredient[]>([]);
+  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [filters, setFilters] = useState<RecipeFiltersType>({
     cuisine: 'any',
     skillLevel: 'any',
@@ -21,31 +19,32 @@ export function UploadPage() {
   });
   const [showRecipes, setShowRecipes] = useState(false);
 
-  const handleImageUpload = (
-    imageUrl: string,
-    detectedIngredients: DetectedIngredient[],
-  ) => {
+  const handleImageUpload = (imageUrl: string, detectedIngredients: string[], detectedQuantities?: Record<string, number>) => {
     setUploadedImage(imageUrl);
     setIngredients(detectedIngredients);
+    setQuantities(detectedQuantities ?? {});
     setShowRecipes(true);
   };
 
-  const handleAddIngredient = (ingredient: DetectedIngredient) => {
-    if (
-      !ingredients.find(
-        (item) => item.name.toLowerCase() === ingredient.name.toLowerCase(),
-      )
-    ) {
-      setIngredients([...ingredients, ingredient]);
+  const handleAddIngredient = (ingredient: string) => {
+    const lower = ingredient.toLowerCase();
+    if (!ingredients.includes(lower)) {
+      setIngredients([...ingredients, lower]);
     }
   };
 
-  const handleRemoveIngredient = (ingredientName: string) => {
-    setIngredients(ingredients.filter((ingredient) => ingredient.name !== ingredientName));
+  const handleRemoveIngredient = (ingredient: string) => {
+    const norm = ingredient.toLowerCase().trim().replace(/_/g, ' ');
+    setIngredients(ingredients.filter((i) => i.toLowerCase().trim().replace(/_/g, ' ') !== norm));
+    setQuantities((q) => {
+      const next = { ...q };
+      delete next[norm];
+      return next;
+    });
   };
 
   // Convert detected ingredients to RecipeList format
-  const ingredientNames = ingredients.map((ingredient) => ingredient.name);
+  const ingredientNames = ingredients;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
@@ -157,23 +156,20 @@ export function UploadPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Left sidebar - Ingredients */}
-            <div className="lg:col-span-1">
-              <IngredientsList
-                ingredients={ingredients}
-                onAddIngredient={handleAddIngredient}
-                onRemoveIngredient={handleRemoveIngredient}
-              />
-            </div>
-            
-            {/* Right content - Filters and Recipes */}
-            <div className="lg:col-span-3">
-              {/* Compact Filters Bar */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <SlidersHorizontal className="w-4 h-4 text-slate-600" />
-                  <h3 className="font-medium text-slate-800">Filters</h3>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-1">
+                <IngredientsList
+                  ingredients={ingredients}
+                  quantities={quantities}
+                  onAddIngredient={handleAddIngredient}
+                  onRemoveIngredient={handleRemoveIngredient}
+                />
+              </div>
+              <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-orange-100 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <SlidersHorizontal className="w-5 h-5 text-orange-500" />
+                  <h3 className="text-lg font-semibold text-slate-800">Refine Your Search</h3>
                 </div>
                 
                 <div className="grid grid-cols-5 gap-3">

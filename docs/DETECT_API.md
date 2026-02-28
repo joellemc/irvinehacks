@@ -90,3 +90,38 @@ Response: `{"ingredients":["label1","label2",...]}`
 | `http://localhost:8000/detect` | POST   | `FormData`, key `image` | `{ "ingredients": [] }` |
 
 Your input is always the **image file** under the form field **`image`**. The API returns a list of detected labels (ingredients) as strings.
+
+---
+
+## Verify YOLO is really running (not mock)
+
+The Next.js app returns **mock ingredients** (same 8 items every time) when `YOLO_SERVICE_URL` is not set or the Python service is unreachable. Use these checks to confirm real YOLO is used.
+
+1. **Env**  
+   In `.env` you must have:
+   ```bash
+   YOLO_SERVICE_URL=http://localhost:8000/detect
+   ```
+   Restart the Next dev server after changing `.env`.
+
+2. **YOLO service health**  
+   With the Python service running (`uvicorn yolo_service:app --reload --port 8000`):
+   ```bash
+   curl http://localhost:8000/health
+   ```
+   Expected: `{"status":"ok"}`. If connection refused, the YOLO service is not running.
+
+3. **Call YOLO directly**  
+   Bypass Next.js and hit the Python service with an image:
+   ```bash
+   curl -s -X POST http://localhost:8000/detect -F "image=@/path/to/any/photo.jpg"
+   ```
+   You should get `{"ingredients":["...", ...]}`. Different images should give different lists (or empty). The default model is COCO (80 classes); only a subset are treated as "food" and returned (e.g. banana, apple, pizza, carrot).
+
+4. **Next.js server log**  
+   When you run "Analyze" in the app, check the terminal where `npm run dev` is running:
+   - **Real YOLO:** `[detect] YOLO service returned N items`
+   - **Mock:** `[detect] YOLO_SERVICE_URL not set — returning mock ingredients`
+
+5. **Different image → different list**  
+   Mock is always: Tomatoes, Eggs, Cheese, Lettuce, Onions, Bell peppers, Chicken breast, Garlic. If you upload different photos and always get exactly that list, the app is still using the mock. Real YOLO will vary by image (or return fewer/more items, or empty).

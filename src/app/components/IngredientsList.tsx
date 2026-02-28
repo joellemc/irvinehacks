@@ -3,12 +3,18 @@ import { Plus, X, Sparkles } from 'lucide-react';
 
 interface IngredientsListProps {
   ingredients: string[];
+  quantities?: Record<string, number>;
   onAddIngredient: (ingredient: string) => void;
   onRemoveIngredient: (ingredient: string) => void;
 }
 
+function normalizeKey(name: string): string {
+  return name.toLowerCase().trim().replace(/_/g, ' ');
+}
+
 export function IngredientsList({
   ingredients,
+  quantities = {},
   onAddIngredient,
   onRemoveIngredient,
 }: IngredientsListProps) {
@@ -46,13 +52,17 @@ export function IngredientsList({
             No ingredients detected yet
           </p>
         ) : (
-          ingredients.map((ingredient, index) => (
+          ingredients.map((ingredient, index) => {
+            const key = normalizeKey(ingredient);
+            const count = quantities[key];
+            const displayLabel = count != null && count > 1 ? `${ingredient} (${count})` : ingredient;
+            return (
             <div
-              key={index}
+              key={`${ingredient}-${index}`}
               className="flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 px-3 py-2 rounded-lg group"
             >
               <span className="text-sm font-medium text-slate-700 capitalize">
-                {ingredient}
+                {displayLabel}
               </span>
               <button
                 onClick={() => onRemoveIngredient(ingredient)}
@@ -62,7 +72,7 @@ export function IngredientsList({
                 <X className="w-4 h-4" />
               </button>
             </div>
-          ))
+          );})
         )}
       </div>
 

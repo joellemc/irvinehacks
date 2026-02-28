@@ -1,66 +1,39 @@
 import { useState, useRef } from 'react';
 import { Upload, Camera, Loader2 } from 'lucide-react';
+import { detectIngredients } from '@/lib/detect';
 
 interface ImageUploadProps {
-  onImageUpload: (imageUrl: string, ingredients: string[]) => void;
+  onImageUpload: (imageUrl: string, ingredients: string[], quantities?: Record<string, number>) => void;
 }
-
-// Mock AI detection - simulates ingredient detection from image
-const detectIngredientsFromImage = (): string[] => {
-  const possibleIngredients = [
-    'chicken breast',
-    'eggs',
-    'milk',
-    'cheese',
-    'tomatoes',
-    'lettuce',
-    'onions',
-    'garlic',
-    'carrots',
-    'potatoes',
-    'bell peppers',
-    'mushrooms',
-    'spinach',
-    'broccoli',
-    'pasta',
-    'rice',
-    'bread',
-    'butter',
-    'olive oil',
-    'soy sauce',
-  ];
-
-  // Randomly select 5-10 ingredients to simulate detection
-  const numIngredients = Math.floor(Math.random() * 6) + 5;
-  const shuffled = [...possibleIngredients].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, numIngredients);
-};
 
 export function ImageUpload({ onImageUpload }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const processImage = (file: File) => {
+  const processImage = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       alert('Please upload an image file');
       return;
     }
-
     setIsProcessing(true);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageUrl = e.target?.result as string;
-      
-      // Simulate AI processing delay
-      setTimeout(() => {
-        const ingredients = detectIngredientsFromImage();
-        onImageUpload(imageUrl, ingredients);
+    setError(null);
+    try {
+      const { ingredients, quantities } = await detectIngredients(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = (e.target?.result as string) ?? '';
+        onImageUpload(imageUrl, ingredients, quantities);
         setIsProcessing(false);
-      }, 1500);
-    };
-    reader.readAsDataURL(file);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Detection failed';
+      setError(message);
+      setIsProcessing(false);
+      onImageUpload(URL.createObjectURL(file), [], {});
+    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,6 +111,12 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
           </div>
         )}
       </div>
+
+      {error && (
+        <p className="text-sm text-red-600 mt-3 text-center" role="alert">
+          {error}
+        </p>
+      )}
 
       <p className="text-xs text-slate-500 mt-4 text-center">
         💡 Tip: Take a clear, well-lit photo of your fridge for best results
