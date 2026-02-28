@@ -49,7 +49,7 @@ The above will also clone the Starter kit to your GitHub, you can clone that loc
 
 If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
 
-## Clone and run locally
+## How to run (Name)
 
 1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
 
