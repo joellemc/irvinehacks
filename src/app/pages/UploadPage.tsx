@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { ImageUpload } from '../components/ImageUpload';
-import { IngredientsList } from '../components/IngredientsList';
+import {
+  ImageUpload,
+  type DetectedIngredient,
+} from '@/components/ImageUpload';
+import { IngredientsList } from '@/components/IngredientsList';
 import { RecipeList } from '../components/RecipeList';
 import { Navbar } from '../components/Navbar';
 import { SlidersHorizontal } from 'lucide-react';
@@ -8,7 +11,7 @@ import { RecipeFilters as RecipeFiltersType } from '../App';
 
 export function UploadPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [ingredients, setIngredients] = useState<DetectedIngredient[]>([]);
   const [filters, setFilters] = useState<RecipeFiltersType>({
     cuisine: 'any',
     skillLevel: 'any',
@@ -18,24 +21,31 @@ export function UploadPage() {
   });
   const [showRecipes, setShowRecipes] = useState(false);
 
-  const handleImageUpload = (imageUrl: string, detectedIngredients: string[]) => {
+  const handleImageUpload = (
+    imageUrl: string,
+    detectedIngredients: DetectedIngredient[],
+  ) => {
     setUploadedImage(imageUrl);
     setIngredients(detectedIngredients);
     setShowRecipes(true);
   };
 
-  const handleAddIngredient = (ingredient: string) => {
-    if (!ingredients.find(i => i.toLowerCase() === ingredient.toLowerCase())) {
+  const handleAddIngredient = (ingredient: DetectedIngredient) => {
+    if (
+      !ingredients.find(
+        (item) => item.name.toLowerCase() === ingredient.name.toLowerCase(),
+      )
+    ) {
       setIngredients([...ingredients, ingredient]);
     }
   };
 
   const handleRemoveIngredient = (ingredientName: string) => {
-    setIngredients(ingredients.filter(i => i !== ingredientName));
+    setIngredients(ingredients.filter((ingredient) => ingredient.name !== ingredientName));
   };
 
   // Convert detected ingredients to RecipeList format
-  const ingredientNames = ingredients;
+  const ingredientNames = ingredients.map((ingredient) => ingredient.name);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
