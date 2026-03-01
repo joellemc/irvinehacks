@@ -106,6 +106,7 @@ Open your browser and navigate to:
 ```
 http://localhost:3000
 ```
+Alternatively, see our finished project here! https://irvinehacks.vercel.app/ 
 
 ---
 
