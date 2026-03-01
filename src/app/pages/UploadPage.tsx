@@ -9,9 +9,23 @@ import { Navbar } from '../components/Navbar';
 import { SlidersHorizontal } from 'lucide-react';
 import { RecipeFilters as RecipeFiltersType } from '../App';
 
+const DEFAULT_ASSUMPTIONS: DetectedIngredient[] = [
+  { name: 'water', category: 'other', useSoon: false },
+  { name: 'salt', category: 'condiments', useSoon: false },
+  { name: 'pepper', category: 'condiments', useSoon: false },
+  { name: 'oil', category: 'condiments', useSoon: false },
+];
+
+function normalizeIngredientName(name: string): string {
+  return name.toLowerCase().trim().replace(/_/g, ' ');
+}
+
 export function UploadPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [ingredients, setIngredients] = useState<DetectedIngredient[]>([]);
+  const [assumptions, setAssumptions] = useState<DetectedIngredient[]>(() =>
+    DEFAULT_ASSUMPTIONS.map((ingredient) => ({ ...ingredient })),
+  );
   const [filters, setFilters] = useState<RecipeFiltersType>({
     cuisine: 'any',
     skillLevel: 'any',
@@ -31,21 +45,60 @@ export function UploadPage() {
   };
 
   const handleAddIngredient = (ingredient: DetectedIngredient) => {
-    if (
-      !ingredients.find(
-        (item) => item.name.toLowerCase() === ingredient.name.toLowerCase(),
-      )
-    ) {
-      setIngredients([...ingredients, ingredient]);
-    }
+    const normalizedName = normalizeIngredientName(ingredient.name);
+    if (!normalizedName) return;
+
+    setIngredients((prevIngredients) => {
+      const alreadyExists = prevIngredients.some(
+        (item) => normalizeIngredientName(item.name) === normalizedName,
+      );
+      if (alreadyExists) return prevIngredients;
+      return [...prevIngredients, { ...ingredient, name: normalizedName }];
+    });
   };
 
   const handleRemoveIngredient = (ingredientName: string) => {
-    setIngredients(ingredients.filter((ingredient) => ingredient.name !== ingredientName));
+    const normalizedName = normalizeIngredientName(ingredientName);
+    setIngredients((prevIngredients) =>
+      prevIngredients.filter(
+        (ingredient) => normalizeIngredientName(ingredient.name) !== normalizedName,
+      ),
+    );
   };
 
-  // Convert detected ingredients to RecipeList format
-  const ingredientNames = ingredients.map((ingredient) => ingredient.name);
+  const handleAddAssumption = (ingredient: DetectedIngredient) => {
+    const normalizedName = normalizeIngredientName(ingredient.name);
+    if (!normalizedName) return;
+
+    setAssumptions((prevAssumptions) => {
+      const alreadyExists = prevAssumptions.some(
+        (item) => normalizeIngredientName(item.name) === normalizedName,
+      );
+      if (alreadyExists) return prevAssumptions;
+      return [
+        ...prevAssumptions,
+        { ...ingredient, name: normalizedName, useSoon: false },
+      ];
+    });
+  };
+
+  const handleRemoveAssumption = (ingredientName: string) => {
+    const normalizedName = normalizeIngredientName(ingredientName);
+    setAssumptions((prevAssumptions) =>
+      prevAssumptions.filter(
+        (ingredient) => normalizeIngredientName(ingredient.name) !== normalizedName,
+      ),
+    );
+  };
+
+  // Include assumptions for recipe matching and dedupe by normalized name.
+  const ingredientNames = Array.from(
+    new Set(
+      [...ingredients, ...assumptions]
+        .map((ingredient) => normalizeIngredientName(ingredient.name))
+        .filter(Boolean),
+    ),
+  );
 
   return (
     <div className="min-h-screen bg-teal-50">
@@ -162,8 +215,11 @@ export function UploadPage() {
             <div className="lg:col-span-1">
               <IngredientsList
                 ingredients={ingredients}
+                assumptions={assumptions}
                 onAddIngredient={handleAddIngredient}
                 onRemoveIngredient={handleRemoveIngredient}
+                onAddAssumption={handleAddAssumption}
+                onRemoveAssumption={handleRemoveAssumption}
               />
             </div>
             

@@ -1,5 +1,5 @@
 import { useGrocery } from '../context/GroceryContext';
-import { Trash2, ShoppingBag, Check } from 'lucide-react';
+import { Trash2, ShoppingBag } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 
 export function GroceriesPage() {
@@ -70,10 +70,12 @@ export function GroceriesPage() {
                       key={item.id}
                       className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors group"
                     >
-                      <button
-                        onClick={() => togglePurchased(item.id)}
-                        className="flex-shrink-0 w-6 h-6 border-2 border-slate-300 rounded hover:border-celadon-500 transition-colors"
-                        aria-label="Mark as purchased"
+                      <input
+                        type="checkbox"
+                        checked={item.purchased}
+                        onChange={() => togglePurchased(item.id)}
+                        className="flex-shrink-0 w-5 h-5 cursor-pointer accent-celadon-500"
+                        aria-label={`Mark ${item.name} as purchased`}
                       />
                       <span className="flex-1 text-slate-800 font-medium capitalize">
                         {item.name}
@@ -106,13 +108,13 @@ export function GroceriesPage() {
                       key={item.id}
                       className="flex items-center gap-3 p-3 bg-celadon-50 rounded-lg hover:bg-celadon-100 transition-colors group"
                     >
-                      <button
-                        onClick={() => togglePurchased(item.id)}
-                        className="flex-shrink-0 w-6 h-6 bg-celadon-500 rounded flex items-center justify-center hover:bg-celadon-600 transition-colors"
-                        aria-label="Mark as unpurchased"
-                      >
-                        <Check className="w-4 h-4 text-white" />
-                      </button>
+                      <input
+                        type="checkbox"
+                        checked={item.purchased}
+                        onChange={() => togglePurchased(item.id)}
+                        className="flex-shrink-0 w-5 h-5 cursor-pointer accent-celadon-500"
+                        aria-label={`Mark ${item.name} as unpurchased`}
+                      />
                       <span className="flex-1 text-slate-500 line-through capitalize">
                         {item.name}
                         {item.quantity && (

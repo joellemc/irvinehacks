@@ -1,11 +1,14 @@
-import { useState, type KeyboardEvent } from 'react';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 import { Plus, X, Sparkles, AlertTriangle, MapPin } from 'lucide-react';
 import { DetectedIngredient } from './ImageUpload';
 
 interface IngredientsListProps {
   ingredients: DetectedIngredient[];
+  assumptions: DetectedIngredient[];
   onAddIngredient: (ingredient: DetectedIngredient) => void;
   onRemoveIngredient: (ingredient: string) => void;
+  onAddAssumption: (ingredient: DetectedIngredient) => void;
+  onRemoveAssumption: (ingredient: string) => void;
 }
 
 const CATEGORY_LABELS = {
@@ -17,13 +20,23 @@ const CATEGORY_LABELS = {
   other: 'Other',
 };
 
+function normalizeIngredientName(name: string): string {
+  return name.toLowerCase().trim().replace(/_/g, ' ');
+}
+
 export function IngredientsList({
   ingredients,
+  assumptions,
   onAddIngredient,
   onRemoveIngredient,
+  onAddAssumption,
+  onRemoveAssumption,
 }: IngredientsListProps) {
   const [newIngredient, setNewIngredient] = useState('');
   const [newCategory, setNewCategory] = useState<DetectedIngredient['category']>('other');
+  const [newAssumption, setNewAssumption] = useState('');
+  const [newAssumptionCategory, setNewAssumptionCategory] =
+    useState<DetectedIngredient['category']>('condiments');
 
   const handleAdd = () => {
     if (newIngredient.trim()) {
@@ -42,8 +55,58 @@ export function IngredientsList({
     }
   };
 
-  // Group ingredients by category
-  const categorizedIngredients = ingredients.reduce((acc, ing) => {
+  const handleAddAssumption = () => {
+    if (newAssumption.trim()) {
+      onAddAssumption({
+        name: newAssumption.trim(),
+        category: newAssumptionCategory,
+        useSoon: false,
+      });
+      setNewAssumption('');
+    }
+  };
+
+  const handleAssumptionKeyPress = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAddAssumption();
+    }
+  };
+
+  const detectedNameSet = useMemo(
+    () => new Set(ingredients.map((item) => normalizeIngredientName(item.name))),
+    [ingredients],
+  );
+
+  // Keep assumptions visible as a separate section without duplicating detected items.
+  const visibleAssumptions = useMemo(
+    () =>
+      assumptions.filter(
+        (item) => !detectedNameSet.has(normalizeIngredientName(item.name)),
+      ),
+    [assumptions, detectedNameSet],
+  );
+
+  // Combine detected + assumptions for counts/category usage and recipe context.
+  const allAvailableIngredients = useMemo(() => {
+    const merged = new Map<string, DetectedIngredient>();
+
+    for (const assumption of assumptions) {
+      const normalizedName = normalizeIngredientName(assumption.name);
+      if (!normalizedName) continue;
+      merged.set(normalizedName, { ...assumption, name: normalizedName });
+    }
+
+    for (const ingredient of ingredients) {
+      const normalizedName = normalizeIngredientName(ingredient.name);
+      if (!normalizedName) continue;
+      merged.set(normalizedName, { ...ingredient, name: normalizedName });
+    }
+
+    return Array.from(merged.values());
+  }, [ingredients, assumptions]);
+
+  // Group all available ingredients by category
+  const categorizedIngredients = allAvailableIngredients.reduce((acc, ing) => {
     if (!acc[ing.category]) {
       acc[ing.category] = [];
     }
@@ -52,7 +115,7 @@ export function IngredientsList({
   }, {} as Record<string, DetectedIngredient[]>);
 
   // Get ingredients that need to be used soon
-  const useSoonIngredients = ingredients.filter(ing => ing.useSoon);
+  const useSoonIngredients = allAvailableIngredients.filter((ing) => ing.useSoon);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-teal-200 p-5">
@@ -66,7 +129,10 @@ export function IngredientsList({
       {/* Summary */}
       <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
         <p className="text-xs text-slate-600 leading-relaxed">
-          <span className="font-semibold text-slate-800">{ingredients.length} items</span> detected
+          <span className="font-semibold text-slate-800">
+            {allAvailableIngredients.length} items
+          </span>{' '}
+          available
           {categorizedIngredients.produce && ` • ${categorizedIngredients.produce.length} produce`}
           {categorizedIngredients.dairy && ` • ${categorizedIngredients.dairy.length} dairy`}
           {categorizedIngredients.proteins && ` • ${categorizedIngredients.proteins.length} proteins`}
@@ -109,6 +175,80 @@ export function IngredientsList({
         </div>
       </div>
 
+      {/* Household Staples */}
+      <div className="border-t border-slate-200 pt-4 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-semibold text-slate-700">Household Staples</h3>
+          <span className="bg-slate-100 text-slate-600 text-xs font-medium px-2 py-0.5 rounded-full">
+            {visibleAssumptions.length}
+          </span>
+        </div>
+        <p className="text-xs text-slate-500 mb-3">
+          Assuming you already have ...
+        </p>
+
+        <div className="flex flex-wrap gap-2 mb-3">
+          {visibleAssumptions.length === 0 ? (
+            <p className="text-xs text-slate-500">
+              No separate assumptions shown
+            </p>
+          ) : (
+            visibleAssumptions.map((ingredient, index) => (
+              <div
+                key={`${ingredient.name}-${index}`}
+                className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full group hover:bg-amber-100 transition-colors"
+              >
+                <span className="text-xs text-slate-700 capitalize">
+                  {ingredient.name}
+                </span>
+                <button
+                  onClick={() => onRemoveAssumption(ingredient.name)}
+                  className="text-slate-400 hover:text-red-600 transition-colors"
+                  aria-label="Remove household staple"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newAssumption}
+              onChange={(e) => setNewAssumption(e.target.value)}
+              onKeyPress={handleAssumptionKeyPress}
+              placeholder="Add household staple..."
+              className="flex-1 px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent"
+            />
+            <button
+              onClick={handleAddAssumption}
+              disabled={!newAssumption.trim()}
+              className="bg-celadon-600 text-white px-3 py-1.5 rounded-lg hover:bg-celadon-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Add household staple"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+          <select
+            value={newAssumptionCategory}
+            onChange={(e) =>
+              setNewAssumptionCategory(e.target.value as DetectedIngredient['category'])
+            }
+            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
+          >
+            <option value="produce">Produce</option>
+            <option value="proteins">Proteins</option>
+            <option value="dairy">Dairy</option>
+            <option value="grains">Grains</option>
+            <option value="condiments">Condiments</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
       {/* Detected Ingredients Title */}
       <div className="border-t border-slate-200 pt-4 mb-3">
         <div className="flex items-center justify-between mb-3">
@@ -123,7 +263,7 @@ export function IngredientsList({
           </div>
         </div>
         <p className="text-xs text-slate-500 mb-3">
-          Remove false positives or add missing items:
+          Verify you have these ingredients:
         </p>
       </div>
 

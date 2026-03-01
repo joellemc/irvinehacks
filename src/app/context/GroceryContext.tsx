@@ -23,19 +23,24 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
 
   const addToGroceries = (item: string, quantity?: string) => {
     const id = item.toLowerCase().replace(/\s+/g, '-');
-    if (!groceries.find(g => g.id === id)) {
-      setGroceries([...groceries, { id, name: item, purchased: false, quantity }]);
-    }
+    setGroceries((prevGroceries) => {
+      if (prevGroceries.find((g) => g.id === id)) {
+        return prevGroceries;
+      }
+      return [...prevGroceries, { id, name: item, purchased: false, quantity }];
+    });
   };
 
   const removeFromGroceries = (id: string) => {
-    setGroceries(groceries.filter(g => g.id !== id));
+    setGroceries((prevGroceries) => prevGroceries.filter((g) => g.id !== id));
   };
 
   const togglePurchased = (id: string) => {
-    setGroceries(groceries.map(g => 
-      g.id === id ? { ...g, purchased: !g.purchased } : g
-    ));
+    setGroceries((prevGroceries) =>
+      prevGroceries.map((g) =>
+        g.id === id ? { ...g, purchased: !g.purchased } : g,
+      ),
+    );
   };
 
   const clearGroceries = () => {
