@@ -1,6 +1,6 @@
 <a href="https://demo-nextjs-with-supabase.vercel.app/">
   <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://i.insider.com/65cceb986fcb546d2d4fadaf?width=800&format=jpeg&auto=webp">
-  <h1 align="center">IrvineHack name placeholder</h1>
+  <h1 align="center">Pantry Pal</h1>
 </a>
 
 <p align="center">
