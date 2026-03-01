@@ -3,7 +3,7 @@
 </a>
 
 <p align="center">
-  Take a photo of your fridge or pantry and generate recipes to reduce food waste.
+  Upload a photo, discover recipes, and never waste food again!
 </p>
 
 <p align="center">
