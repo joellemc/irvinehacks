@@ -10,7 +10,6 @@
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#how-it-works"><strong>How It Works</strong></a> ·
   <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
   <a href="#how-to-run"><strong>How to Run</strong></a> ·
   <a href="#challenges"><strong>Challenges</strong></a> ·
   <a href="#future-improvements"><strong>Future Improvements</strong></a>
@@ -71,21 +70,6 @@ This creates a seamless pipeline from image input to intelligent recipe output.
 - Roboflow for custom object detection  
 - Ultralytics YOLO for initial experimentation  
 - Google Gemini for recipe generation  
-
----
-
-## Deploy to Vercel
-
-Pantry Pal is deployed using Vercel.
-
-To deploy your own version:
-
-1. Push your project to GitHub.  
-2. Connect the repository to Vercel.  
-3. Add environment variables in the Vercel dashboard.  
-4. Deploy.  
-
-Vercel automatically handles builds and serverless API routing.
 
 ---
 
