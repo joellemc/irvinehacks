@@ -9,7 +9,6 @@
 <p align="center">
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#how-it-works"><strong>How It Works</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
   <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
   <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
   <a href="#how-to-run"><strong>How to Run</strong></a> ·
@@ -52,16 +51,6 @@ There have been many times we let food go bad in our fridge or pantry because we
 7. The application displays recipes with a breakdown of ingredients you have and ingredients you need.
 
 This creates a seamless pipeline from image input to intelligent recipe output.
-
----
-
-## Demo
-
-Add your deployed link here:
-
-```
-https://your-live-vercel-link.vercel.app
-```
 
 ---
 
