@@ -16,93 +16,149 @@
   <a href="#more-supabase-examples"><strong>More Examples</strong></a>
 </p>
 <br/>
+Here is the full README in proper Markdown format so you can copy and paste it directly into your `README.md` file on GitHub:
 
-## Features
+````markdown
+# 🥗 Pantry Pal
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+Pantry Pal is a full stack web application that helps users turn the food they already have into real recipes. By combining computer vision and generative AI, Pantry Pal allows users to upload a photo of groceries and instantly receive recipe suggestions based on detected ingredients.
 
-## Demo
+---
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+## 💡 Inspiration
 
-## Deploy to Vercel
+As broke college students who hate wasting food, we wanted to create a tool that makes cooking easier, more accessible, and more affordable.
 
-Vercel deployment will guide you through creating a Supabase account and project.
+There have been many times we let food go bad in our fridge or pantry because we did not know what to make with it. Instead of scrolling through recipe websites, we wanted a faster and smarter solution. Pantry Pal was built to solve that problem.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+## 🍽️ What It Does
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+With Pantry Pal, users can:
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+- Upload a photo of groceries from their fridge or pantry  
+- Select preferences such as cuisine type, cooking skill level, and available time  
+- Automatically detect ingredients from the image  
+- Receive AI generated recipes based on detected items  
 
-## How to run
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+Each recipe clearly displays:
 
-2. Create a Next.js app using the Supabase Starter template npx command
+- Ingredients you already have  
+- Ingredients you are missing  
+- Step by step instructions  
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+Users can also add missing ingredients to a grocery list for their next shopping trip.
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+---
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+## 🧠 How It Works
 
-3. Use `cd` to change into the app's directory
+1. The user uploads an image of their groceries.
+2. The image is sent to Roboflow for object detection.
+3. Roboflow returns a list of detected ingredients.
+4. The user can edit or confirm the ingredient list.
+5. The confirmed ingredients are sent to Google Gemini.
+6. Gemini generates structured recipe suggestions.
+7. The application displays the recipes along with a breakdown of ingredients you have and ingredients you need.
 
-   ```bash
-   cd with-supabase-app
-   ```
+This creates a smooth pipeline from image input to intelligent recipe output.
 
-4. Rename `.env.example` to `.env.local` and update the following:
+---
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+## 🛠️ Tech Stack
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+### Frontend
+- Next.js  
+- React  
+- Tailwind CSS  
+- shadcn/ui  
+- Figma for UI and UX design  
 
-5. You can now run the Next.js local development server:
+### Backend
+- Next.js API Routes  
+- Vercel for hosting and deployment  
 
-   ```bash
-   npm run dev
-   ```
+### AI and Computer Vision
+- Roboflow for custom object detection  
+- Ultralytics YOLO for initial experimentation  
+- Google Gemini for recipe generation  
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+---
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+## 🚧 Challenges
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+One major challenge was selecting the right image detection approach. We initially experimented with Ultralytics YOLO, but encountered limitations in dataset coverage and detection accuracy for groceries. After testing and iteration, we transitioned to Roboflow, which allowed us to leverage open source datasets and retrain a custom model tailored to our use case.
 
-## Feedback and issues
+We also faced challenges integrating features through GitHub collaboration. We improved our workflow by adopting a structured branching strategy and reviewing pull requests before merging.
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+---
 
-## More Supabase examples
+## 🏆 Accomplishments
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+- Built our first full stack web application  
+- Trained and deployed a custom grocery detection model  
+- Designed and iterated the UI using Figma  
+- Successfully integrated computer vision with generative AI  
+
+---
+
+## ⚙️ Installation and Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/pantry-pal.git
+cd pantry-pal
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create a `.env.local` file and add your API keys:
+
+```
+ROBOFLOW_API_KEY=your_key
+GEMINI_API_KEY=your_key
+```
+
+4. Start the development server:
+
+```bash
+npm run dev
+```
+
+5. Open your browser and go to:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 🌍 Deployment
+
+Pantry Pal is deployed using Vercel.
+
+To deploy your own version:
+
+1. Push your project to GitHub.  
+2. Connect the repository to Vercel.  
+3. Add environment variables in the Vercel dashboard.  
+4. Deploy.  
+
+Vercel handles build and serverless API routing automatically.
+
+---
+
+## 🔮 Future Improvements
+
+- Improve ingredient detection accuracy  
+- Expand the number of supported grocery classes  
+- Detect ingredient quantities  
+- Integrate grocery pricing APIs  
+- Add user accounts and saved recipes  
+- Include links to recipe demonstration videos  
