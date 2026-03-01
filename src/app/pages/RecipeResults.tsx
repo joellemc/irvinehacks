@@ -117,7 +117,7 @@ export function RecipeResults() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-teal-50">
       <div className="max-w-7xl mx-auto px-8 py-16">
         {/* Header */}
         <div className="mb-12">

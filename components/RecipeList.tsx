@@ -298,16 +298,16 @@ export function RecipeList({ ingredients, filters }: RecipeListProps) {
 
   if (filteredRecipes.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-12 text-center">
+      <div className="bg-white rounded-2xl shadow-sm border border-teal-200 p-12 text-center">
         <div className="max-w-md mx-auto">
-          <div className="bg-gradient-to-br from-slate-100 to-slate-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-slate-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Sparkles className="w-10 h-10 text-slate-400" />
           </div>
           <h3 className="text-xl font-bold text-slate-800 mb-2">No Recipes Found</h3>
           <p className="text-slate-600 mb-4">
             We couldn't find any recipes matching your criteria. Try adjusting your filters or adding more ingredients.
           </p>
-          <div className="bg-orange-50 p-4 rounded-xl text-left">
+          <div className="bg-celadon-50 p-4 rounded-xl text-left">
             <p className="text-sm font-semibold text-slate-800 mb-2">Suggestions:</p>
             <ul className="text-sm text-slate-600 space-y-1">
               <li>• Change your cuisine preference to "Any Cuisine"</li>

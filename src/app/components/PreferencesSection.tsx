@@ -25,7 +25,7 @@ export function PreferencesSection({ preferences, onPreferencesChange }: Prefere
   };
 
   return (
-    <div className="border border-gray-200 rounded-xl bg-white">
+    <div className="border border-teal-200 rounded-xl bg-white">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"

@@ -80,7 +80,7 @@ export default function ReviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-teal-50">
       <div className="max-w-7xl mx-auto px-8 py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl mb-3 text-gray-900">
@@ -124,7 +124,7 @@ export default function ReviewPage() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+            <div className="bg-white rounded-2xl border border-teal-200 p-6 mb-8">
               {ingredients.length === 0 ? (
                 <p className="text-gray-500 text-sm mb-4">
                   No items detected in the image. Add ingredients manually below.

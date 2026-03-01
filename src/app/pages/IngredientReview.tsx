@@ -63,7 +63,7 @@ export function IngredientReview() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-teal-50">
       <div className="max-w-7xl mx-auto px-8 py-16">
         {/* Header */}
         <div className="text-center mb-12">
@@ -111,7 +111,7 @@ export function IngredientReview() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+            <div className="bg-teal-50 rounded-2xl border border-teal-200 p-6 mb-8">
               <div className="flex flex-wrap gap-3 mb-4">
                 {ingredients.map((ingredient, index) => (
                   <IngredientChip

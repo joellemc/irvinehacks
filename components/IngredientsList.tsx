@@ -55,7 +55,7 @@ export function IngredientsList({
   const useSoonIngredients = ingredients.filter(ing => ing.useSoon);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div className="bg-white rounded-xl shadow-sm border border-teal-200 p-5">
       <div className="flex items-center gap-2 mb-4">
         <MapPin className="w-5 h-5 text-slate-600" />
         <h2 className="font-semibold text-slate-800">
@@ -75,12 +75,12 @@ export function IngredientsList({
 
       {/* Use Soon Warning */}
       {useSoonIngredients.length > 0 && (
-        <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+        <div className="mb-4 p-3 bg-celadon-50 border border-celadon-200 rounded-lg">
           <div className="flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-celadon-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-xs font-semibold text-orange-900 mb-1">Use Soon</p>
-              <p className="text-xs text-orange-700">
+              <p className="text-xs font-semibold text-celadon-800 mb-1">Use Soon</p>
+              <p className="text-xs text-celadon-600">
                 {useSoonIngredients.map(i => i.name).join(', ')}
               </p>
             </div>
@@ -167,12 +167,12 @@ export function IngredientsList({
               onChange={(e) => setNewIngredient(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Add missing item..."
-              className="flex-1 px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+              className="flex-1 px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent"
             />
             <button
               onClick={handleAdd}
               disabled={!newIngredient.trim()}
-              className="bg-orange-500 text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-celadon-600 text-white px-3 py-1.5 rounded-lg hover:bg-celadon-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Add ingredient"
             >
               <Plus className="w-4 h-4" />
@@ -181,7 +181,7 @@ export function IngredientsList({
           <select
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value as DetectedIngredient['category'])}
-            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
+            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
           >
             <option value="produce">Produce</option>
             <option value="proteins">Proteins</option>

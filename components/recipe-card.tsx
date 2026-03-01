@@ -35,7 +35,7 @@ export function RecipeCard({
         />
         {allIngredientsAvailable && (
           <div className="absolute top-3 right-3">
-            <Badge className="bg-green-600 hover:bg-green-700 text-white">
+            <Badge className="bg-celadon-700 hover:bg-celadon-800 text-white">
               <CheckCircle className="w-3 h-3 mr-1" />
               All ingredients available
             </Badge>

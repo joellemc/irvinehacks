@@ -12,9 +12,9 @@ export function RecipeFilters({ filters, onFiltersChange }: RecipeFiltersProps) 
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-teal-200 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <SlidersHorizontal className="w-5 h-5 text-orange-500" />
+        <SlidersHorizontal className="w-5 h-5 text-celadon-600" />
         <h2 className="text-lg font-semibold text-slate-800">Recipe Preferences</h2>
       </div>
 
@@ -27,7 +27,7 @@ export function RecipeFilters({ filters, onFiltersChange }: RecipeFiltersProps) 
           <select
             value={filters.cuisine}
             onChange={(e) => handleFilterChange('cuisine', e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
           >
             <option value="any">Any Cuisine</option>
             <option value="american">American</option>
@@ -49,7 +49,7 @@ export function RecipeFilters({ filters, onFiltersChange }: RecipeFiltersProps) 
           <select
             value={filters.skillLevel}
             onChange={(e) => handleFilterChange('skillLevel', e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
           >
             <option value="any">Any Level</option>
             <option value="beginner">Beginner</option>
@@ -66,7 +66,7 @@ export function RecipeFilters({ filters, onFiltersChange }: RecipeFiltersProps) 
           <select
             value={filters.cookTime}
             onChange={(e) => handleFilterChange('cookTime', e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
           >
             <option value="any">Any Time</option>
             <option value="quick">Under 15 mins</option>
@@ -84,7 +84,7 @@ export function RecipeFilters({ filters, onFiltersChange }: RecipeFiltersProps) 
           <select
             value={filters.budget}
             onChange={(e) => handleFilterChange('budget', e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
           >
             <option value="any">Any Budget</option>
             <option value="low">Budget Friendly ($)</option>
@@ -101,7 +101,7 @@ export function RecipeFilters({ filters, onFiltersChange }: RecipeFiltersProps) 
           <select
             value={filters.mealTime}
             onChange={(e) => handleFilterChange('mealTime', e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
           >
             <option value="any">Any Time</option>
             <option value="breakfast">Breakfast</option>

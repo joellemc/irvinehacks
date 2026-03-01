@@ -23,7 +23,7 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
   const getSkillColor = (level: string) => {
     switch (level) {
       case 'beginner':
-        return 'bg-green-100 text-green-700';
+        return 'bg-celadon-100 text-celadon-700';
       case 'intermediate':
         return 'bg-yellow-100 text-yellow-700';
       case 'advanced':
@@ -49,18 +49,18 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
   return (
     <div 
       onClick={onClick}
-      className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-1"
+      className="bg-white rounded-2xl shadow-sm border border-teal-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-1"
     >
       {/* Image */}
-      <div className="relative h-48 bg-gradient-to-br from-orange-100 to-amber-100 overflow-hidden">
+      <div className="relative h-48 bg-celadon-100 overflow-hidden">
         <img
           src={recipe.image}
           alt={recipe.name}
           className="w-full h-full object-cover"
         />
         {/* Match Badge */}
-        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-          <span className="text-sm font-bold text-orange-600">
+        <div className="absolute top-3 right-3 bg-teal-100 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+          <span className="text-sm font-bold text-celadon-600">
             {recipe.matchPercentage}% Match
           </span>
         </div>
@@ -72,13 +72,13 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
         <div className="mb-3">
           <h3 className="text-xl font-bold text-slate-800 mb-2">{recipe.name}</h3>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-medium px-2 py-1 bg-orange-100 text-orange-700 rounded-full">
+            <span className="text-xs font-medium px-2 py-1 bg-celadon-100 text-celadon-700 rounded-full">
               {recipe.cuisine}
             </span>
             <span className={`text-xs font-medium px-2 py-1 rounded-full capitalize ${getSkillColor(recipe.skillLevel)}`}>
               {recipe.skillLevel}
             </span>
-            <span className="text-xs font-medium px-2 py-1 bg-purple-100 text-purple-700 rounded-full capitalize">
+            <span className="text-xs font-medium px-2 py-1 bg-celadon-100 text-celadon-700 rounded-full capitalize">
               {recipe.mealTime}
             </span>
           </div>
@@ -103,7 +103,7 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
         {/* Ingredients Preview */}
         <div className="mb-4">
           <h4 className="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-1.5">
-            <Utensils className="w-4 h-4 text-orange-500" />
+            <Utensils className="w-4 h-4 text-celadon-600" />
             Key Ingredients
           </h4>
           <div className="flex flex-wrap gap-1.5">
@@ -129,7 +129,7 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
           <ol className="text-sm text-slate-600 space-y-1">
             {recipe.instructions.slice(0, 3).map((step, index) => (
               <li key={index} className="flex gap-2">
-                <span className="text-orange-500 font-medium">{index + 1}.</span>
+                <span className="text-celadon-600 font-medium">{index + 1}.</span>
                 <span className="line-clamp-2">{step}</span>
               </li>
             ))}

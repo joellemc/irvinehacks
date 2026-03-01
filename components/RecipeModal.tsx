@@ -28,7 +28,7 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
   const getSkillColor = (level: string) => {
     switch (level) {
       case 'beginner':
-        return 'bg-green-100 text-green-700';
+        return 'bg-celadon-100 text-celadon-700';
       case 'intermediate':
         return 'bg-yellow-100 text-yellow-700';
       case 'advanced':
@@ -86,10 +86,10 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
                 <DollarSign className="w-4 h-4" />
                 <span className="text-sm">{getBudgetIcons(recipe.budget)}</span>
               </div>
-              <span className="text-xs font-medium px-2 py-1 bg-orange-100 text-orange-700 rounded-full">
+              <span className="text-xs font-medium px-2 py-1 bg-celadon-100 text-celadon-700 rounded-full">
                 {recipe.cuisine}
               </span>
-              <span className="text-xs font-medium px-2 py-1 bg-purple-100 text-purple-700 rounded-full capitalize">
+              <span className="text-xs font-medium px-2 py-1 bg-celadon-100 text-celadon-700 rounded-full capitalize">
                 {recipe.mealTime}
               </span>
             </div>
@@ -108,8 +108,8 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
           {/* Ingredients You Have */}
           <div>
             <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <Check className="w-4 h-4 text-green-600" />
+              <div className="w-6 h-6 bg-celadon-100 rounded-full flex items-center justify-center">
+                <Check className="w-4 h-4 text-celadon-600" />
               </div>
               Ingredients You Have ({ingredientsYouHave.length})
             </h3>
@@ -117,7 +117,7 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
               {ingredientsYouHave.map((ingredient, index) => (
                 <div
                   key={index}
-                  className="px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm font-medium capitalize flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-celadon-50 border border-celadon-200 text-celadon-700 rounded-lg text-sm font-medium capitalize flex items-center gap-1.5"
                 >
                   <Check className="w-3.5 h-3.5" />
                   {ingredient}
@@ -130,8 +130,8 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
           {ingredientsYouNeed.length > 0 && (
             <div>
               <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-                <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                  <Plus className="w-4 h-4 text-orange-600" />
+                <div className="w-6 h-6 bg-celadon-100 rounded-full flex items-center justify-center">
+                  <Plus className="w-4 h-4 text-celadon-600" />
                 </div>
                 Ingredients You Need ({ingredientsYouNeed.length})
               </h3>
@@ -139,9 +139,9 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
                 {ingredientsYouNeed.map((ingredient, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg"
+                    className="flex items-center justify-between px-3 py-2 bg-celadon-50 border border-celadon-200 rounded-lg"
                   >
-                    <span className="text-sm font-medium text-orange-900 capitalize">
+                    <span className="text-sm font-medium text-celadon-800 capitalize">
                       {ingredient}
                     </span>
                     <button
@@ -151,7 +151,7 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
                         text-xs px-3 py-1 rounded-md font-medium transition-all
                         ${isInGroceries(ingredient)
                           ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                          : 'bg-orange-500 text-white hover:bg-orange-600'
+                          : 'bg-bright-lavender-500 text-white hover:bg-bright-lavender-600'
                         }
                       `}
                     >
@@ -169,7 +169,7 @@ export function RecipeModal({ recipe, userIngredients, onClose }: RecipeModalPro
             <ol className="space-y-4">
               {recipe.instructions.map((step, index) => (
                 <li key={index} className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                  <div className="flex-shrink-0 w-8 h-8 bg-celadon-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                     {index + 1}
                   </div>
                   <p className="text-slate-700 pt-1">{step}</p>

@@ -48,12 +48,12 @@ export function UploadPage() {
   const ingredientNames = ingredients.map((ingredient) => ingredient.name);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
+    <div className="min-h-screen bg-teal-50">
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         {!showRecipes ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-teal-200 p-8">
             {/* Upload Section */}
             <div className="mb-8">
               <ImageUpload onImageUpload={handleImageUpload} />
@@ -62,7 +62,7 @@ export function UploadPage() {
             {/* Preferences Section */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <SlidersHorizontal className="w-5 h-5 text-orange-500" />
+                <SlidersHorizontal className="w-5 h-5 text-celadon-600" />
                 <h3 className="text-lg font-semibold text-slate-800">Set Your Preferences</h3>
               </div>
               
@@ -74,7 +74,7 @@ export function UploadPage() {
                   <select
                     value={filters.cuisine}
                     onChange={(e) => setFilters({ ...filters, cuisine: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                   >
                     <option value="any">Any Cuisine</option>
                     <option value="american">American</option>
@@ -95,7 +95,7 @@ export function UploadPage() {
                   <select
                     value={filters.skillLevel}
                     onChange={(e) => setFilters({ ...filters, skillLevel: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                   >
                     <option value="any">Any Level</option>
                     <option value="beginner">Beginner</option>
@@ -111,7 +111,7 @@ export function UploadPage() {
                   <select
                     value={filters.cookTime}
                     onChange={(e) => setFilters({ ...filters, cookTime: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                   >
                     <option value="any">Any Time</option>
                     <option value="quick">Under 15 mins</option>
@@ -128,7 +128,7 @@ export function UploadPage() {
                   <select
                     value={filters.budget}
                     onChange={(e) => setFilters({ ...filters, budget: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                   >
                     <option value="any">Any Budget</option>
                     <option value="low">Budget Friendly ($)</option>
@@ -144,7 +144,7 @@ export function UploadPage() {
                   <select
                     value={filters.mealTime}
                     onChange={(e) => setFilters({ ...filters, mealTime: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                   >
                     <option value="any">Any Time</option>
                     <option value="breakfast">Breakfast</option>
@@ -170,7 +170,7 @@ export function UploadPage() {
             {/* Right content - Filters and Recipes */}
             <div className="lg:col-span-3">
               {/* Compact Filters Bar */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
+              <div className="bg-white rounded-xl shadow-sm border border-teal-200 p-4 mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <SlidersHorizontal className="w-4 h-4 text-slate-600" />
                   <h3 className="font-medium text-slate-800">Filters</h3>
@@ -184,7 +184,7 @@ export function UploadPage() {
                     <select
                       value={filters.cuisine}
                       onChange={(e) => setFilters({ ...filters, cuisine: e.target.value })}
-                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="american">American</option>
@@ -205,7 +205,7 @@ export function UploadPage() {
                     <select
                       value={filters.skillLevel}
                       onChange={(e) => setFilters({ ...filters, skillLevel: e.target.value })}
-                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="beginner">Beginner</option>
@@ -221,7 +221,7 @@ export function UploadPage() {
                     <select
                       value={filters.cookTime}
                       onChange={(e) => setFilters({ ...filters, cookTime: e.target.value })}
-                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="quick">&lt;15 min</option>
@@ -238,7 +238,7 @@ export function UploadPage() {
                     <select
                       value={filters.budget}
                       onChange={(e) => setFilters({ ...filters, budget: e.target.value })}
-                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="low">$</option>
@@ -254,7 +254,7 @@ export function UploadPage() {
                     <select
                       value={filters.mealTime}
                       onChange={(e) => setFilters({ ...filters, mealTime: e.target.value })}
-                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent bg-white"
                     >
                       <option value="any">Any</option>
                       <option value="breakfast">Breakfast</option>

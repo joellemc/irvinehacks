@@ -87,8 +87,8 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
         className={`
           relative block border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
           ${isDragging 
-            ? 'border-orange-500 bg-orange-50' 
-            : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/50'
+            ? 'border-celadon-500 bg-celadon-50' 
+            : 'border-slate-200 hover:border-celadon-400 hover:bg-celadon-50/50'
           }
           ${isProcessing ? 'opacity-50 pointer-events-none' : ''}
         `}
@@ -105,14 +105,14 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
 
         {isProcessing ? (
           <div className="space-y-3">
-            <Loader2 className="w-12 h-12 text-orange-500 mx-auto animate-spin" />
+            <Loader2 className="w-12 h-12 text-celadon-600 mx-auto animate-spin" />
             <p className="text-sm font-medium text-slate-700">Analyzing ingredients...</p>
             <p className="text-xs text-slate-500">Our AI is scanning your fridge</p>
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="bg-gradient-to-br from-orange-100 to-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-              <Camera className="w-8 h-8 text-orange-600" />
+            <div className="bg-celadon-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+              <Camera className="w-8 h-8 text-celadon-600" />
             </div>
             <div>
               <p className="text-sm font-medium text-slate-700 mb-1">

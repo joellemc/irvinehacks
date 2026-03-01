@@ -34,13 +34,13 @@ export function IngredientsList({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-teal-200 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-5 h-5 text-orange-500" />
+        <Sparkles className="w-5 h-5 text-celadon-600" />
         <h2 className="text-lg font-semibold text-slate-800">
           Detected Ingredients
         </h2>
-        <span className="bg-orange-100 text-orange-700 text-xs font-medium px-2 py-1 rounded-full">
+        <span className="bg-celadon-100 text-celadon-700 text-xs font-medium px-2 py-1 rounded-full">
           {ingredients.length}
         </span>
       </div>
@@ -59,7 +59,7 @@ export function IngredientsList({
             return (
             <div
               key={`${ingredient}-${index}`}
-              className="flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 px-3 py-2 rounded-lg group"
+              className="flex items-center justify-between bg-celadon-100 px-3 py-2 rounded-lg group"
             >
               <span className="text-sm font-medium text-slate-700 capitalize">
                 {displayLabel}
@@ -88,12 +88,12 @@ export function IngredientsList({
             onChange={(e) => setNewIngredient(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="e.g., avocado, bacon..."
-            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-celadon-500 focus:border-transparent"
           />
           <button
             onClick={handleAdd}
             disabled={!newIngredient.trim()}
-            className="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-celadon-600 text-white p-2 rounded-lg hover:bg-celadon-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Add ingredient"
           >
             <Plus className="w-5 h-5" />
