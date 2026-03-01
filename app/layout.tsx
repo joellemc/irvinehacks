@@ -7,7 +7,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "What's in your fridge? | Food to recipe",
+  title: "Pantry Pan | Food to recipe",
   description:
     "Upload a photo of your food and get recipe suggestions using what you have.",
 };

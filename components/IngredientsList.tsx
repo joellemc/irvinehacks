@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { Plus, X, Sparkles, AlertTriangle, MapPin } from 'lucide-react';
 import { DetectedIngredient } from './ImageUpload';
 
@@ -36,7 +36,7 @@ export function IngredientsList({
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAdd();
     }
