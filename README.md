@@ -16,9 +16,7 @@
   <a href="#more-supabase-examples"><strong>More Examples</strong></a>
 </p>
 <br/>
-Here is the full README in proper Markdown format so you can copy and paste it directly into your `README.md` file on GitHub:
 
-````markdown
 # 🥗 Pantry Pal
 
 Pantry Pal is a full stack web application that helps users turn the food they already have into real recipes. By combining computer vision and generative AI, Pantry Pal allows users to upload a photo of groceries and instantly receive recipe suggestions based on detected ingredients.
