@@ -1,4 +1,4 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
+<a href=>
   <img alt="Pantry Pal Banner" src="https://i.insider.com/65cceb986fcb546d2d4fadaf?width=800&format=jpeg&auto=webp">
   <h1 align="center">Pantry Pal</h1>
 </a>
