@@ -1,5 +1,4 @@
-<a href=>
-  <img alt="Pantry Pal Banner" src="https://i.insider.com/65cceb986fcb546d2d4fadaf?width=800&format=jpeg&auto=webp">
+<img alt="Pantry Pal Banner" src="https://ftb.org/wp-content/uploads/2021/03/BigModule_nutrition-blog.jpg">
   <h1 align="center">Pantry Pal</h1>
 </a>
 
