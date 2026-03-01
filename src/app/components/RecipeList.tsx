@@ -258,8 +258,8 @@ export function RecipeList({ ingredients, filters }: RecipeListProps) {
     // Calculate match percentage for each recipe
     const recipesWithMatch = ALL_RECIPES.map((recipe) => {
       const matchingIngredients = recipe.ingredients.filter((ing) =>
-        ingredients.some((userIng) => 
-          userIng.toLowerCase().includes(ing.toLowerCase()) || 
+        ingredients.some((userIng) =>
+          userIng.toLowerCase().includes(ing.toLowerCase()) ||
           ing.toLowerCase().includes(userIng.toLowerCase())
         )
       );

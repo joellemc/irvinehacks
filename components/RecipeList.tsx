@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { RecipeFilters } from '../App';
+import { RecipeFilters } from '<source />/App';
 import { RecipeCard, Recipe } from './RecipeCard';
 import { RecipeModal } from './RecipeModal';
 import { Sparkles } from 'lucide-react';
@@ -255,10 +255,13 @@ const ALL_RECIPES: Recipe[] = [
 
 export function RecipeList({ ingredients, filters }: RecipeListProps) {
   const filteredRecipes = useMemo(() => {
+    // Filter out any undefined or null values from ingredients
+    const validIngredients = ingredients.filter(ing => ing != null && ing.trim() !== '');
+    
     // Calculate match percentage for each recipe
     const recipesWithMatch = ALL_RECIPES.map((recipe) => {
       const matchingIngredients = recipe.ingredients.filter((ing) =>
-        ingredients.some((userIng) => 
+        validIngredients.some((userIng) => 
           userIng.toLowerCase().includes(ing.toLowerCase()) || 
           ing.toLowerCase().includes(userIng.toLowerCase())
         )
@@ -322,16 +325,16 @@ export function RecipeList({ ingredients, filters }: RecipeListProps) {
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">
-          Found {filteredRecipes.length} Recipe{filteredRecipes.length !== 1 ? 's' : ''}
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold text-slate-800">
+          {filteredRecipes.length} Recipe{filteredRecipes.length !== 1 ? 's' : ''} Found
         </h2>
-        <p className="text-slate-600">
-          Based on your ingredients and preferences
+        <p className="text-sm text-slate-500 mt-1">
+          Based on your available ingredients
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {filteredRecipes.map((recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} onClick={() => setSelectedRecipe(recipe)} />
         ))}
