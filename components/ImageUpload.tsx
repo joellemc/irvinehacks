@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { Upload, Camera, Loader2 } from 'lucide-react';
+import { detectIngredients } from '@/lib/detect';
 
 export interface DetectedIngredient {
   name: string;
@@ -11,100 +12,102 @@ interface ImageUploadProps {
   onImageUpload: (imageUrl: string, ingredients: DetectedIngredient[]) => void;
 }
 
-// Mock AI detection - simulates ingredient detection from image with categories
-const detectIngredientsFromImage = (): DetectedIngredient[] => {
-  const possibleIngredients: DetectedIngredient[] = [
-    // Produce
-    { name: 'white onions', category: 'produce' },
-    { name: 'avocado', category: 'produce', useSoon: true },
-    { name: 'carrots', category: 'produce' },
-    { name: 'cauliflower', category: 'produce' },
-    { name: 'salad greens', category: 'produce', useSoon: true },
-    { name: 'spinach', category: 'produce', useSoon: true },
-    { name: 'tomatoes', category: 'produce' },
-    { name: 'bell peppers', category: 'produce' },
-    { name: 'broccoli', category: 'produce' },
-    
-    // Proteins
-    { name: 'eggs', category: 'proteins' },
-    { name: 'protein bars', category: 'proteins' },
-    { name: 'almond butter', category: 'proteins' },
-    { name: 'peanut butter', category: 'proteins' },
-    { name: 'chicken breast', category: 'proteins' },
-    
-    // Dairy
-    { name: 'kefir', category: 'dairy' },
-    { name: 'Greek yogurt', category: 'dairy' },
-    { name: 'raspberry kefir', category: 'dairy' },
-    { name: 'vanilla coffee creamer', category: 'dairy' },
-    { name: 'almond milk', category: 'dairy' },
-    { name: 'Starbucks vanilla latte', category: 'dairy' },
-    { name: 'shredded cheese', category: 'dairy' },
-    { name: 'cheese slices', category: 'dairy' },
-    { name: 'butter', category: 'dairy' },
-    { name: 'milk', category: 'dairy' },
-    
-    // Grains
-    { name: 'chickpea pasta', category: 'grains' },
-    { name: 'tortillas', category: 'grains' },
-    { name: 'rice', category: 'grains' },
-    { name: 'bread', category: 'grains' },
-    
-    // Condiments
-    { name: 'marinara sauce', category: 'condiments' },
-    { name: 'salsa', category: 'condiments' },
-    { name: 'soy sauce', category: 'condiments' },
-    { name: 'olive oil', category: 'condiments' },
-    
-    // Other
-    { name: 'chocolate bars', category: 'other' },
-    { name: 'applesauce pouches', category: 'other' },
-    { name: 'corn', category: 'other' },
-    { name: 'green juice', category: 'other' },
-    { name: 'sparkling water', category: 'other' },
-  ];
-
-  // Randomly select 15-28 ingredients to simulate detection
-  const numIngredients = Math.floor(Math.random() * 14) + 15;
-  const shuffled = [...possibleIngredients].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, numIngredients);
+const CATEGORY_KEYWORDS: Record<DetectedIngredient['category'], string[]> = {
+  produce: [
+    'avocado', 'lettuce', 'spinach', 'salad', 'onion', 'tomato', 'pepper', 'broccoli',
+    'carrot', 'potato', 'mushroom', 'cauliflower', 'cucumber', 'zucchini', 'apple', 'fruit',
+  ],
+  proteins: ['egg', 'chicken', 'beef', 'pork', 'turkey', 'tofu', 'fish', 'salmon', 'tuna', 'bean'],
+  dairy: ['milk', 'cheese', 'yogurt', 'kefir', 'cream', 'butter', 'latte'],
+  grains: ['bread', 'rice', 'pasta', 'tortilla', 'noodle', 'oat', 'quinoa'],
+  condiments: ['sauce', 'oil', 'vinegar', 'ketchup', 'mustard', 'mayo', 'salsa', 'soy'],
+  other: [],
 };
+
+const USE_SOON_KEYWORDS = ['avocado', 'spinach', 'salad', 'lettuce', 'berry', 'kefir', 'milk', 'yogurt'];
+
+function normalizeIngredientName(name: string): string {
+  return name.toLowerCase().trim().replace(/_/g, ' ');
+}
+
+function classifyCategory(name: string): DetectedIngredient['category'] {
+  const normalized = normalizeIngredientName(name);
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS) as Array<
+    [DetectedIngredient['category'], string[]]
+  >) {
+    if (keywords.some((keyword) => normalized.includes(keyword))) {
+      return category;
+    }
+  }
+  return 'other';
+}
+
+function shouldUseSoon(name: string): boolean {
+  const normalized = normalizeIngredientName(name);
+  return USE_SOON_KEYWORDS.some((keyword) => normalized.includes(keyword));
+}
+
+function toDetectedIngredients(ingredients: string[]): DetectedIngredient[] {
+  const unique = Array.from(
+    new Set(
+      ingredients
+        .map((ingredient) => normalizeIngredientName(ingredient))
+        .filter(Boolean),
+    ),
+  );
+
+  return unique.map((name) => ({
+    name,
+    category: classifyCategory(name),
+    useSoon: shouldUseSoon(name),
+  }));
+}
 
 export function ImageUpload({ onImageUpload }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const processImage = (file: File) => {
+  const processImage = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       alert('Please upload an image file');
       return;
     }
 
     setIsProcessing(true);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageUrl = e.target?.result as string;
-      
-      // Simulate AI processing delay
-      setTimeout(() => {
-        const ingredients = detectIngredientsFromImage();
-        onImageUpload(imageUrl, ingredients);
+    setError(null);
+    try {
+      const { ingredients } = await detectIngredients(file);
+      const detectedIngredients = toDetectedIngredients(ingredients);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = (e.target?.result as string) ?? '';
+        onImageUpload(imageUrl, detectedIngredients);
         setIsProcessing(false);
-      }, 1500);
-    };
-    reader.readAsDataURL(file);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Detection failed';
+      setError(message);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = (e.target?.result as string) ?? '';
+        onImageUpload(imageUrl, []);
+        setIsProcessing(false);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       processImage(file);
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     
@@ -114,7 +117,7 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
     }
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
@@ -172,6 +175,12 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
           </div>
         )}
       </div>
+
+      {error && (
+        <p className="text-sm text-red-600 mt-3 text-center" role="alert">
+          {error}
+        </p>
+      )}
 
       <p className="text-xs text-slate-500 mt-4 text-center">
         💡 Tip: Take a clear, well-lit photo of your fridge for best results

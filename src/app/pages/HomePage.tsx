@@ -14,7 +14,7 @@ export function HomePage() {
             <ChefHat className="w-14 h-14 text-orange-600" />
           </div>
           <h1 className="text-5xl font-bold text-slate-800 mb-4">
-            Welcome to <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Fridge to Fork</span>
+            Welcome to <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Pantry Pan</span>
           </h1>
           <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
             Turn your fridge ingredients into delicious meals. Upload a photo, discover recipes, and never waste food again!
