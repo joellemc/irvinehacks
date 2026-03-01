@@ -6,6 +6,8 @@ export interface DetectedIngredient {
   name: string;
   category: 'produce' | 'proteins' | 'dairy' | 'grains' | 'condiments' | 'other';
   useSoon?: boolean;
+  /** Count from detection (e.g. 3 eggs). Omitted when 1. */
+  quantity?: number;
 }
 
 interface ImageUploadProps {
@@ -47,7 +49,10 @@ function shouldUseSoon(name: string): boolean {
   return USE_SOON_KEYWORDS.some((keyword) => normalized.includes(keyword));
 }
 
-function toDetectedIngredients(ingredients: string[]): DetectedIngredient[] {
+function toDetectedIngredients(
+  ingredients: string[],
+  quantities: Record<string, number> = {},
+): DetectedIngredient[] {
   const unique = Array.from(
     new Set(
       ingredients
@@ -56,11 +61,15 @@ function toDetectedIngredients(ingredients: string[]): DetectedIngredient[] {
     ),
   );
 
-  return unique.map((name) => ({
-    name,
-    category: classifyCategory(name),
-    useSoon: shouldUseSoon(name),
-  }));
+  return unique.map((name) => {
+    const quantity = quantities[name];
+    return {
+      name,
+      category: classifyCategory(name),
+      useSoon: shouldUseSoon(name),
+      ...(quantity != null && quantity > 1 && { quantity }),
+    };
+  });
 }
 
 export function ImageUpload({ onImageUpload }: ImageUploadProps) {
@@ -78,8 +87,8 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
     setIsProcessing(true);
     setError(null);
     try {
-      const { ingredients } = await detectIngredients(file);
-      const detectedIngredients = toDetectedIngredients(ingredients);
+      const { ingredients, quantities } = await detectIngredients(file);
+      const detectedIngredients = toDetectedIngredients(ingredients, quantities);
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = (e.target?.result as string) ?? '';
@@ -129,27 +138,29 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
   return (
     <div>
       <h3 className="text-lg font-semibold text-slate-800 mb-4">Upload Your Fridge Photo</h3>
-      
-      <div
+
+      <label
+        htmlFor="fridge-image-upload"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`
-          relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
-          ${isDragging 
-            ? 'border-orange-500 bg-orange-50' 
+          relative block border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
+          ${isDragging
+            ? 'border-orange-500 bg-orange-50'
             : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/50'
           }
           ${isProcessing ? 'opacity-50 pointer-events-none' : ''}
         `}
-        onClick={() => !isProcessing && fileInputRef.current?.click()}
       >
         <input
+          id="fridge-image-upload"
           ref={fileInputRef}
           type="file"
           accept="image/*"
           onChange={handleFileSelect}
           className="hidden"
+          aria-label="Upload fridge photo"
         />
 
         {isProcessing ? (
@@ -174,7 +185,7 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
             <Upload className="w-5 h-5 text-slate-400 mx-auto" />
           </div>
         )}
-      </div>
+      </label>
 
       {error && (
         <p className="text-sm text-red-600 mt-3 text-center" role="alert">

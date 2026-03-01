@@ -19,20 +19,33 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
     }
     setIsProcessing(true);
     setError(null);
+    const safetyTimeout = setTimeout(() => {
+      setIsProcessing(false);
+      setError('Request took too long. You can try again or add ingredients manually.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }, 14_000);
     try {
       const { ingredients, quantities } = await detectIngredients(file);
+      clearTimeout(safetyTimeout);
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = (e.target?.result as string) ?? '';
         onImageUpload(imageUrl, ingredients, quantities);
         setIsProcessing(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
       };
       reader.readAsDataURL(file);
     } catch (err) {
+      clearTimeout(safetyTimeout);
       const message = err instanceof Error ? err.message : 'Detection failed';
       setError(message);
       setIsProcessing(false);
       onImageUpload(URL.createObjectURL(file), [], {});
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } finally {
+      setIsProcessing(false);
+      clearTimeout(safetyTimeout);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -65,27 +78,29 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
   return (
     <div>
       <h3 className="text-lg font-semibold text-slate-800 mb-4">Upload Your Fridge Photo</h3>
-      
-      <div
+
+      <label
+        htmlFor="fridge-image-upload-src"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`
-          relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
+          relative block border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
           ${isDragging 
             ? 'border-orange-500 bg-orange-50' 
             : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/50'
           }
           ${isProcessing ? 'opacity-50 pointer-events-none' : ''}
         `}
-        onClick={() => !isProcessing && fileInputRef.current?.click()}
       >
         <input
+          id="fridge-image-upload-src"
           ref={fileInputRef}
           type="file"
           accept="image/*"
           onChange={handleFileSelect}
           className="hidden"
+          aria-label="Upload fridge photo"
         />
 
         {isProcessing ? (
@@ -110,7 +125,7 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
             <Upload className="w-5 h-5 text-slate-400 mx-auto" />
           </div>
         )}
-      </div>
+      </label>
 
       {error && (
         <p className="text-sm text-red-600 mt-3 text-center" role="alert">

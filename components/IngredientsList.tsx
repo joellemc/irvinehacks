@@ -98,7 +98,11 @@ export function IngredientsList({
                 {CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS]}
               </h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                {items.map(i => i.name).join(', ')}
+                {items.map(i =>
+                  i.quantity != null && i.quantity > 1
+                    ? `${i.name} (${i.quantity})`
+                    : i.name
+                ).join(', ')}
               </p>
             </div>
           ))}
@@ -137,6 +141,9 @@ export function IngredientsList({
             >
               <span className="text-xs text-slate-700 capitalize">
                 {ingredient.name}
+                {ingredient.quantity != null && ingredient.quantity > 1 && (
+                  <span className="text-slate-500"> ({ingredient.quantity})</span>
+                )}
               </span>
               <button
                 onClick={() => onRemoveIngredient(ingredient.name)}

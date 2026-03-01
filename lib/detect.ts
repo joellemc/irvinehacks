@@ -13,7 +13,7 @@ export interface DetectError {
   details?: string;
 }
 
-const DETECT_TIMEOUT_MS = 30_000;
+const DETECT_TIMEOUT_MS = 12_000;
 
 /**
  * Call the Next.js detect API with an image file.
